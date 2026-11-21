@@ -48,7 +48,13 @@
         <span class="card-hint">共 {{ total }} 位医生</span>
       </template>
 
-      <el-table v-loading="loading" :data="rows" size="small">
+      <el-table
+        v-loading="loading"
+        :data="rows"
+        size="small"
+        class="clickable-table"
+        @row-click="openDetail"
+      >
         <el-table-column label="医生" min-width="170">
           <template #default="{ row }">
             <div class="doc-cell">
@@ -97,7 +103,7 @@
         </el-table-column>
         <el-table-column label="操作" width="110" align="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click="openEdit(row)">
+            <el-button link type="primary" @click.stop="openEdit(row)">
               {{ row.hasProfile ? '编辑档案' : '完善档案' }}
             </el-button>
           </template>
@@ -208,6 +214,55 @@
         <el-button @click="showModal = false">取消</el-button>
         <el-button type="primary" :loading="saving" @click="submit">保存档案</el-button>
       </template>
+    </el-dialog>
+
+    <el-dialog v-model="showDetail" title="医生档案详情" width="760px">
+      <div v-if="detailData" class="doc-detail">
+        <div class="detail-head">
+          <span class="avatar">{{ (detailData.realName || detailData.username || '?').charAt(0) }}</span>
+          <div class="detail-title">
+            <b>{{ detailData.realName || '—' }}</b>
+            <div class="mono t-muted">{{ detailData.username }}</div>
+          </div>
+          <Chip :text="detailData.statusText" />
+        </div>
+
+        <div class="form-section">基础信息</div>
+        <el-descriptions :column="2" border size="small">
+          <el-descriptions-item label="手机号">{{ dash(detailData.phone) }}</el-descriptions-item>
+          <el-descriptions-item label="职称">{{ dash(detailData.title) }}</el-descriptions-item>
+          <el-descriptions-item label="行政职务">{{ dash(detailData.position) }}</el-descriptions-item>
+          <el-descriptions-item label="所属医院">{{ dash(detailData.hospital) }}</el-descriptions-item>
+          <el-descriptions-item label="所属科室">{{ dash(detailData.department) }}</el-descriptions-item>
+          <el-descriptions-item label="档案更新时间">{{ dash(detailData.updateTime) }}</el-descriptions-item>
+        </el-descriptions>
+
+        <div class="form-section">执业资质</div>
+        <el-descriptions :column="2" border size="small">
+          <el-descriptions-item label="执业证书编号">{{ dash(detailData.licenseNo) }}</el-descriptions-item>
+          <el-descriptions-item label="资格证书编号">{{ dash(detailData.certNo) }}</el-descriptions-item>
+          <el-descriptions-item label="执业类别">{{ dash(detailData.licenseType) }}</el-descriptions-item>
+          <el-descriptions-item label="执业范围">{{ dash(detailData.practiceScope) }}</el-descriptions-item>
+          <el-descriptions-item label="发证机关">{{ dash(detailData.issuingAuthority) }}</el-descriptions-item>
+          <el-descriptions-item label="有效期至">{{ dash(detailData.licenseExpireDate) }}</el-descriptions-item>
+        </el-descriptions>
+
+        <div class="form-section">出诊与擅长</div>
+        <el-descriptions :column="2" border size="small">
+          <el-descriptions-item label="擅长领域">{{ dash(detailData.specialty) }}</el-descriptions-item>
+          <el-descriptions-item label="出诊时间">{{ dash(detailData.schedule) }}</el-descriptions-item>
+          <el-descriptions-item label="挂号费">
+            {{ detailData.registrationFee != null ? `￥${detailData.registrationFee}` : '—' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="在管患者上限">{{ dash(detailData.maxPatients) }}</el-descriptions-item>
+        </el-descriptions>
+
+        <div class="form-section">简介与经历</div>
+        <el-descriptions :column="1" border size="small">
+          <el-descriptions-item label="个人简介">{{ dash(detailData.introduction) }}</el-descriptions-item>
+          <el-descriptions-item label="工作与教育经历">{{ dash(detailData.experience) }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -355,6 +410,28 @@ async function openEdit(row) {
   showModal.value = true
 }
 
+const showDetail = ref(false)
+const detailData = ref(null)
+
+function dash(value) {
+  return value === null || value === undefined || value === '' ? '—' : value
+}
+
+async function openDetail(row) {
+  try {
+    const data = await request.get('/api/business/doctors/profile', {
+      params: { profileId: row.id }
+    })
+    if (!data) {
+      return
+    }
+    detailData.value = data
+    showDetail.value = true
+  } catch (e) {
+    toast.error(e.message || '档案明细加载失败')
+  }
+}
+
 function buildPayload() {
   return {
     realName: form.realName,
@@ -436,5 +513,34 @@ onMounted(async () => {
   margin: 6px 0 12px;
   font-weight: 600;
   color: #303133;
+}
+.clickable-table :deep(.el-table__row) {
+  cursor: pointer;
+}
+.doc-detail {
+  max-height: 62vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.detail-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.detail-head .avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #4f6ef7;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+.detail-head .detail-title {
+  flex: 1;
 }
 </style>

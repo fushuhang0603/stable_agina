@@ -31,19 +31,19 @@ public class SysRoleController {
     @Operation(summary = "角色列表")
     @GetMapping
     public Result<List<SysRoleVO>> list() {
-        return Result.ok(sysRoleService.list());
+        return Result.success(sysRoleService.list());
     }
 
     @Operation(summary = "角色已授权的菜单 ID")
     @GetMapping("/{id}/menus")
     public Result<List<Long>> menuIds(@PathVariable Long id) {
-        return Result.ok(sysRoleService.menuIds(id));
+        return Result.success(sysRoleService.menuIds(id));
     }
 
     @Operation(summary = "保存角色权限分配")
     @PutMapping("/{id}/grant")
     public Result<Void> grant(@PathVariable Long id, @Valid @RequestBody SysRoleGrantDTO dto) {
         sysRoleService.grant(id, dto);
-        return Result.ok();
+        return Result.success();
     }
 }

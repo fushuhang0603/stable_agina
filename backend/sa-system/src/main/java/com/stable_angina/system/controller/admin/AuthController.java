@@ -31,26 +31,26 @@ public class AuthController {
     @Operation(summary = "账号密码登录")
     @PostMapping("/login")
     public Result<LoginVO> login(@Valid @RequestBody LoginDTO dto, HttpServletRequest request) {
-        return Result.ok(authService.login(dto, clientIp(request), request.getHeader("User-Agent")));
+        return Result.success(authService.login(dto, clientIp(request), request.getHeader("User-Agent")));
     }
 
     @Operation(summary = "登出（令牌立即失效）")
     @PostMapping("/logout")
     public Result<Void> logout() {
         authService.logout();
-        return Result.ok();
+        return Result.success();
     }
 
     @Operation(summary = "刷新令牌")
     @PostMapping("/refresh")
     public Result<LoginVO> refresh() {
-        return Result.ok(authService.refresh());
+        return Result.success(authService.refresh());
     }
 
     @Operation(summary = "当前登录用户信息")
     @GetMapping("/me")
     public Result<UserInfoVO> me() {
-        return Result.ok(authService.currentUser());
+        return Result.success(authService.currentUser());
     }
 
     /**

@@ -71,6 +71,17 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public DoctorProfileVO detailById(Long id) {
+        DoctorProfileVO vo = doctorProfileMapper.selectDoctorDetailById(id);
+        if (vo == null) {
+            log.warn("医生档案明细不存在: profileId={}", id);
+            return null;
+        }
+        vo.setStatusText(vo.getStatus() != null && vo.getStatus() == CommonConstants.STATUS_ENABLED ? "启用" : "停用");
+        return vo;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(Long userId, DoctorProfileUpdateDTO dto) {
         if (userMapper.selectById(userId) == null) {

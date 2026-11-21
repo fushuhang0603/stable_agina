@@ -17,5 +17,10 @@ public interface DoctorService {
 
     DoctorProfileVO detail(Long userId);
 
+    /**
+     * 按医生档案主键查询档案明细
+     */
+    DoctorProfileVO detailById(Long id);
+
     void update(Long userId, DoctorProfileUpdateDTO dto);
 }

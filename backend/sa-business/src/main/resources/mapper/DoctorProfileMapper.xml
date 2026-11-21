@@ -82,6 +82,37 @@
           AND u.id = #{userId}
     </select>
 
+    <select id="selectDoctorDetailById" resultType="com.stable_angina.business.domain.vo.DoctorProfileVO">
+        SELECT p.id,
+               p.user_id,
+               u.username,
+               u.real_name,
+               u.phone,
+               u.title,
+               u.hospital,
+               u.department,
+               p.position,
+               p.specialty,
+               p.license_no,
+               p.license_type,
+               p.practice_scope,
+               p.cert_no,
+               p.issuing_authority,
+               p.license_expire_date,
+               p.introduction,
+               p.experience,
+               p.schedule,
+               p.registration_fee,
+               p.max_patients,
+               u.status,
+               p.update_time,
+               1 AS has_profile
+        FROM doctor_profile p
+                 INNER JOIN sys_user u ON u.id = p.user_id AND u.deleted = 0
+        WHERE p.deleted = 0
+          AND p.id = #{id}
+    </select>
+
     <select id="selectStats" resultType="com.stable_angina.business.domain.vo.DoctorProfileStatsVO">
         SELECT COUNT(*) AS total,
                COALESCE(SUM(CASE WHEN p.id IS NOT NULL THEN 1 ELSE 0 END), 0) AS profiled,

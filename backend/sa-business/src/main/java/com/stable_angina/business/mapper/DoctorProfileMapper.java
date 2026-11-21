@@ -22,5 +22,10 @@ public interface DoctorProfileMapper extends BaseMapper<DoctorProfile> {
 
     DoctorProfileVO selectDoctorDetail(@Param("userId") Long userId);
 
+    /**
+     * 按医生档案主键查询档案明细
+     */
+    DoctorProfileVO selectDoctorDetailById(@Param("id") Long id);
+
     DoctorProfileStatsVO selectStats();
 }

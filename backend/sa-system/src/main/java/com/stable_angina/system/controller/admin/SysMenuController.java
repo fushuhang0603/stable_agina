@@ -26,6 +26,6 @@ public class SysMenuController {
     @Operation(summary = "菜单权限树")
     @GetMapping("/tree")
     public Result<List<MenuTreeVO>> tree() {
-        return Result.ok(sysMenuService.tree());
+        return Result.success(sysMenuService.tree());
     }
 }

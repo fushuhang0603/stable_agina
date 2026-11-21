@@ -36,39 +36,39 @@ public class SysUserController {
     @Operation(summary = "分页查询账号列表")
     @GetMapping
     public Result<PageResult<SysUserVO>> page(SysUserQueryDTO query) {
-        return Result.ok(sysUserService.page(query));
+        return Result.success(sysUserService.page(query));
     }
 
     @Operation(summary = "账号统计概览")
     @GetMapping("/stats")
     public Result<SysUserStatsVO> stats() {
-        return Result.ok(sysUserService.stats());
+        return Result.success(sysUserService.stats());
     }
 
     @Operation(summary = "新增账号")
     @PostMapping
     public Result<Long> create(@Valid @RequestBody SysUserCreateDTO dto) {
-        return Result.ok(sysUserService.create(dto));
+        return Result.success(sysUserService.create(dto));
     }
 
     @Operation(summary = "编辑账号")
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @Valid @RequestBody SysUserUpdateDTO dto) {
         sysUserService.update(id, dto);
-        return Result.ok();
+        return Result.success();
     }
 
     @Operation(summary = "启用 / 停用账号")
     @PutMapping("/{id}/status")
     public Result<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody SysUserStatusDTO dto) {
         sysUserService.updateStatus(id, dto.getStatus());
-        return Result.ok();
+        return Result.success();
     }
 
     @Operation(summary = "重置密码")
     @PutMapping("/{id}/password")
     public Result<Void> resetPassword(@PathVariable Long id, @Valid @RequestBody SysUserPasswordDTO dto) {
         sysUserService.resetPassword(id, dto.getPassword());
-        return Result.ok();
+        return Result.success();
     }
 }
