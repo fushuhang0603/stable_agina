@@ -27,9 +27,7 @@
         <el-button type="primary" @click="search">查询</el-button>
         <el-button @click="reset">重置</el-button>
         <div class="filter-spacer"></div>
-        <el-button type="primary" @click="openCreate">
-          <el-icon><Plus /></el-icon>新增账号
-        </el-button>
+        <el-button type="primary" @click="openCreate">新增账号</el-button>
       </div>
     </el-card>
 
@@ -64,15 +62,7 @@
         <template #empty>未找到符合条件的账号</template>
       </el-table>
 
-      <el-pagination
-        v-model:current-page="page"
-        class="list-pager"
-        background
-        layout="total, prev, pager, next"
-        :total="total"
-        :page-size="pageSize"
-        @current-change="loadPage"
-      />
+      <ListPager v-model:page="page" :total="total" :size="pageSize" @change="loadPage" />
     </Card>
 
     <el-dialog v-model="showModal" :title="isEdit ? '编辑账号' : '新增账号'" width="560px">
@@ -118,6 +108,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import Card from '../components/Card.vue'
 import Chip from '../components/Chip.vue'
+import ListPager from '../components/ListPager.vue'
 import StatCard from '../components/StatCard.vue'
 import request from '../utils/request'
 import { toast } from '../utils/toast'
@@ -310,9 +301,5 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 12px;
-}
-.list-pager {
-  margin-top: 12px;
-  justify-content: flex-end;
 }
 </style>

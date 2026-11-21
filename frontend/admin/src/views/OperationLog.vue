@@ -43,11 +43,9 @@
         <el-select v-model="filters.result" placeholder="全部结果" clearable style="width: 110px">
           <el-option v-for="o in resultOptions" :key="o.value" :value="o.value" :label="o.label" />
         </el-select>
-        <el-button @click="reset"><el-icon><RefreshLeft /></el-icon>重置</el-button>
+        <el-button @click="reset">重置</el-button>
         <div class="filter-spacer"></div>
-        <el-button @click="toast('演示环境：已创建日志导出任务')">
-          <el-icon><Download /></el-icon>导出
-        </el-button>
+        <el-button @click="toast('演示环境：已创建日志导出任务')">导出</el-button>
       </div>
     </el-card>
 

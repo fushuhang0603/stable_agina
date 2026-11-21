@@ -22,7 +22,6 @@
             <div><span>运行模式</span><b class="green">Mock</b></div>
           </div>
           <el-button type="primary" class="generate-btn" :loading="generating" @click="generate">
-            <el-icon v-if="!generating"><MagicStick /></el-icon>
             {{ generating ? '正在生成摘要…' : '生成 AI 随访摘要' }}
           </el-button>
           <div class="section-note" style="margin-top: 12px">
@@ -71,16 +70,10 @@
               <span v-if="current.editor">审核人 {{ current.editor }} · {{ current.editedAt }}</span>
             </div>
             <div class="summary-ops">
-              <el-button @click="saveDraft">
-                <el-icon><Document /></el-icon>保存草稿
-              </el-button>
-              <el-button @click="regenerate">
-                <el-icon><Refresh /></el-icon>重新生成
-              </el-button>
+              <el-button @click="saveDraft">保存草稿</el-button>
+              <el-button @click="regenerate">重新生成</el-button>
               <el-button type="danger" plain @click="reject">驳回</el-button>
-              <el-button type="primary" class="op-approve" @click="approve">
-                <el-icon><Check /></el-icon>审核通过并归档
-              </el-button>
+              <el-button type="primary" class="op-approve" @click="approve">审核通过并归档</el-button>
             </div>
           </el-card>
 

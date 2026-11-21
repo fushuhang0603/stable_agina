@@ -30,9 +30,7 @@
           </div>
         </div>
         <div class="dict-left-f">
-          <el-button class="dict-add-type" @click="openTypeModal">
-            <el-icon><Plus /></el-icon>新增字典类型
-          </el-button>
+          <el-button class="dict-add-type" @click="openTypeModal">新增字典类型</el-button>
         </div>
       </Card>
 
@@ -41,7 +39,7 @@
           <div class="dict-tools">
             <span v-if="currentDict" class="card-hint dict-code">{{ currentDict.code }}</span>
             <el-button type="primary" size="small" :disabled="!currentDict" @click="openItemModal(null)">
-              <el-icon><Plus /></el-icon>新增字典项
+              新增字典项
             </el-button>
           </div>
         </template>

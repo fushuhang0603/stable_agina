@@ -49,7 +49,7 @@
         <el-select v-model="filters.scene" placeholder="全部场景" clearable style="width: 130px">
           <el-option v-for="o in sceneOptions" :key="o.value" :value="o.value" :label="o.label" />
         </el-select>
-        <el-button @click="reset"><el-icon><RefreshLeft /></el-icon>重置</el-button>
+        <el-button @click="reset">重置</el-button>
       </div>
     </el-card>
 

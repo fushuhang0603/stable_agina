@@ -57,7 +57,6 @@
         </dl>
         <div class="ai-test-row">
           <el-button type="primary" :loading="testing" @click="testConnection">
-            <el-icon v-if="!testing"><Connection /></el-icon>
             {{ testing ? '正在测试…' : '测试连接' }}
           </el-button>
           <span class="t-muted">测试只发送一次最小化健康检查请求，不包含患者数据。</span>
@@ -69,12 +68,8 @@
       <div class="cfg-actions">
         <span class="t-muted">保存后立即生效，变更记录可在「操作日志」中追溯。</span>
         <div class="cfg-action-btns">
-          <el-button @click="restoreDefaults">
-            <el-icon><RefreshLeft /></el-icon>恢复默认
-          </el-button>
-          <el-button type="primary" @click="saveConfig">
-            <el-icon><Check /></el-icon>保存修改
-          </el-button>
+          <el-button @click="restoreDefaults">恢复默认</el-button>
+          <el-button type="primary" @click="saveConfig">保存修改</el-button>
         </div>
       </div>
     </Card>

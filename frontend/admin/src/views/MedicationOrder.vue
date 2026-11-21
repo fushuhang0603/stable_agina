@@ -26,12 +26,8 @@
         <el-button type="primary" @click="page = 1">查询</el-button>
         <el-button @click="reset">重置</el-button>
         <div class="filter-spacer"></div>
-        <el-button @click="toast('演示环境：已按当前筛选条件创建医嘱导出任务')">
-          <el-icon><Download /></el-icon>导出
-        </el-button>
-        <el-button type="primary" @click="toast('演示环境：新增医嘱需接入后端接口')">
-          <el-icon><Plus /></el-icon>新增医嘱
-        </el-button>
+        <el-button @click="toast('演示环境：已按当前筛选条件创建医嘱导出任务')">导出</el-button>
+        <el-button type="primary" @click="toast('演示环境：新增医嘱需接入后端接口')">新增医嘱</el-button>
       </div>
     </el-card>
 
@@ -89,14 +85,7 @@
         <template #empty>未找到符合条件的医嘱</template>
       </el-table>
 
-      <el-pagination
-        v-model:current-page="page"
-        class="list-pager"
-        background
-        layout="total, prev, pager, next"
-        :total="filtered.length"
-        :page-size="pageSize"
-      />
+      <ListPager v-model:page="page" :total="filtered.length" :size="pageSize" />
     </Card>
 
     <Card title="近 7 天服药打卡">
@@ -126,6 +115,7 @@
 import { computed, nextTick, reactive, ref, watch } from 'vue'
 import Card from '../components/Card.vue'
 import Chip from '../components/Chip.vue'
+import ListPager from '../components/ListPager.vue'
 import StatCard from '../components/StatCard.vue'
 import { MED_CHECKS, MED_ORDERS } from '../mock'
 import { toast } from '../utils/toast'
@@ -246,9 +236,5 @@ function toggleStatus(row) {
 .adherence .pct.red {
   color: var(--red);
   font-weight: 500;
-}
-.list-pager {
-  margin-top: 12px;
-  justify-content: flex-end;
 }
 </style>

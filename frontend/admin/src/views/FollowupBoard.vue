@@ -26,10 +26,7 @@
           <el-select v-model="doctor" placeholder="随访医生" clearable style="width: 132px">
             <el-option v-for="o in doctorOptions" :key="o.value" :label="o.label" :value="o.value" />
           </el-select>
-          <el-button @click="toast('演示环境：已按当前条件刷新工单')">
-            <el-icon><Refresh /></el-icon>
-            <span>刷新</span>
-          </el-button>
+          <el-button @click="toast('演示环境：已按当前条件刷新工单')">刷新</el-button>
         </div>
       </div>
     </el-card>

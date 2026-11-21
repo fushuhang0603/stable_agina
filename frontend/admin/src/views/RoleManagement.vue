@@ -51,7 +51,7 @@
             <b>菜单权限</b>
             <span class="t-muted">已选 {{ checked.size }} 项</span>
             <el-button type="primary" size="small" class="perm-save" :loading="saving" @click="save">
-              <el-icon><Check /></el-icon>保存权限
+              保存权限
             </el-button>
           </div>
 

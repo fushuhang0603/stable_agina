@@ -53,9 +53,7 @@
             <span v-if="row.handledAt" class="t-muted"> · {{ row.handledAt }}</span>
           </div>
           <div class="ar-ops">
-            <el-button size="small" type="primary" @click="openHandle(row)">
-              <el-icon><Edit /></el-icon>处置/回复
-            </el-button>
+            <el-button size="small" type="primary" @click="openHandle(row)">处置/回复</el-button>
           </div>
         </article>
         <el-empty v-if="!filtered.length" description="暂无符合条件的不良反应上报" />

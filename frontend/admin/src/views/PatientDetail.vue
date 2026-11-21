@@ -19,14 +19,8 @@
           </div>
         </div>
         <div class="hero-actions">
-          <el-button @click="toast('演示环境：档案编辑需接入后端接口')">
-            <el-icon><Edit /></el-icon>
-            <span>编辑档案</span>
-          </el-button>
-          <el-button type="primary" @click="goAi">
-            <el-icon><DataAnalysis /></el-icon>
-            <span>生成 AI 摘要</span>
-          </el-button>
+          <el-button @click="toast('演示环境：档案编辑需接入后端接口')">编辑档案</el-button>
+          <el-button type="primary" @click="goAi">生成 AI 摘要</el-button>
         </div>
       </div>
     </el-card>

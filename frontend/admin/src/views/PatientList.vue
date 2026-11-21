@@ -17,14 +17,8 @@
         <el-button type="primary" @click="page = 1">查询</el-button>
         <el-button @click="reset">重置</el-button>
         <div class="filter-spacer"></div>
-        <el-button @click="toast('演示环境：已按当前筛选条件创建导出任务')">
-          <el-icon><Download /></el-icon>
-          <span>导出</span>
-        </el-button>
-        <el-button type="primary" @click="toast('演示环境：新增患者需接入后端接口')">
-          <el-icon><Plus /></el-icon>
-          <span>新增患者</span>
-        </el-button>
+        <el-button @click="toast('演示环境：已按当前筛选条件创建导出任务')">导出</el-button>
+        <el-button type="primary" @click="toast('演示环境：新增患者需接入后端接口')">新增患者</el-button>
       </div>
     </el-card>
 
@@ -85,14 +79,7 @@
         <template #empty>未找到符合条件的患者</template>
       </el-table>
 
-      <el-pagination
-        v-model:current-page="page"
-        class="list-pager"
-        background
-        layout="total, prev, pager, next"
-        :total="filtered.length"
-        :page-size="pageSize"
-      />
+      <ListPager v-model:page="page" :total="filtered.length" :size="pageSize" />
     </Card>
   </div>
 </template>
@@ -102,6 +89,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Card from '../components/Card.vue'
 import Chip from '../components/Chip.vue'
+import ListPager from '../components/ListPager.vue'
 import { PATIENTS } from '../mock'
 import { toast } from '../utils/toast'
 
@@ -185,9 +173,6 @@ function goDetail(id) {
 .txt-red {
   color: var(--red);
   font-weight: 500;
-}
-.list-pager {
-  margin-top: 12px;
 }
 :deep(.clickable-row) {
   cursor: pointer;
