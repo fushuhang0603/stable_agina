@@ -6,7 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stable_angina.common.api.ErrorCodes;
 import com.stable_angina.common.api.PageResult;
 import com.stable_angina.common.constant.CommonConstants;
-import com.stable_angina.common.exception.BizException;
+import com.stable_angina.common.event.DoctorProfileInitEvent;
+import com.stable_angina.common.api.BusinessException;
 import com.stable_angina.system.domain.dto.SysUserCreateDTO;
 import com.stable_angina.system.domain.dto.SysUserQueryDTO;
 import com.stable_angina.system.domain.dto.SysUserUpdateDTO;
@@ -15,7 +16,6 @@ import com.stable_angina.system.domain.entity.SysUser;
 import com.stable_angina.system.domain.entity.SysUserRole;
 import com.stable_angina.system.domain.vo.SysUserStatsVO;
 import com.stable_angina.system.domain.vo.SysUserVO;
-import com.stable_angina.system.event.DoctorProfileInitEvent;
 import com.stable_angina.system.mapper.SysRoleMapper;
 import com.stable_angina.system.mapper.SysUserMapper;
 import com.stable_angina.system.mapper.SysUserRoleMapper;
@@ -95,7 +95,12 @@ public class SysUserServiceImpl implements SysUserService {
             return vo;
         }).toList();
 
-        return PageResult.of(rows, userPage.getTotal(), current, size);
+        PageResult<SysUserVO> result = new PageResult<>();
+        result.setRecords(rows);
+        result.setTotal(userPage.getTotal());
+        result.setPageNum(current);
+        result.setPageSize(size);
+        return result;
     }
 
     @Override
@@ -110,13 +115,13 @@ public class SysUserServiceImpl implements SysUserService {
         LambdaQueryWrapper<SysUser> usernameWrapper = new LambdaQueryWrapper<>();
         usernameWrapper.eq(SysUser::getUsername, username);
         if (userMapper.selectCount(usernameWrapper) > 0) {
-            throw new BizException(ErrorCodes.USERNAME_EXISTS, "用户名已存在");
+            throw new BusinessException(ErrorCodes.USERNAME_EXISTS, "用户名已存在");
         }
         if (StringUtils.hasText(dto.getPhone())) {
             LambdaQueryWrapper<SysUser> phoneWrapper = new LambdaQueryWrapper<>();
             phoneWrapper.eq(SysUser::getPhone, dto.getPhone());
             if (userMapper.selectCount(phoneWrapper) > 0) {
-                throw new BizException(ErrorCodes.PHONE_EXISTS, "手机号已存在");
+                throw new BusinessException(ErrorCodes.PHONE_EXISTS, "手机号已存在");
             }
         }
         LambdaQueryWrapper<SysRole> roleWrapper = new LambdaQueryWrapper<>();
@@ -124,7 +129,7 @@ public class SysUserServiceImpl implements SysUserService {
         roleWrapper.eq(SysRole::getStatus, CommonConstants.STATUS_ENABLED);
         SysRole role = roleMapper.selectOne(roleWrapper);
         if (role == null) {
-            throw new BizException(ErrorCodes.BAD_REQUEST, "角色不存在或已停用");
+            throw new BusinessException(ErrorCodes.BAD_REQUEST, "角色不存在或已停用");
         }
 
         SysUser user = BeanUtil.copyProperties(dto, SysUser.class);
@@ -160,14 +165,14 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional(rollbackFor = Exception.class)
     public void update(Long id, SysUserUpdateDTO dto) {
         if (userMapper.selectById(id) == null) {
-            throw new BizException(ErrorCodes.USER_NOT_FOUND, "用户不存在");
+            throw new BusinessException(ErrorCodes.USER_NOT_FOUND, "用户不存在");
         }
         if (StringUtils.hasText(dto.getPhone())) {
             LambdaQueryWrapper<SysUser> phoneWrapper = new LambdaQueryWrapper<>();
             phoneWrapper.eq(SysUser::getPhone, dto.getPhone());
             phoneWrapper.ne(SysUser::getId, id);
             if (userMapper.selectCount(phoneWrapper) > 0) {
-                throw new BizException(ErrorCodes.PHONE_EXISTS, "手机号已存在");
+                throw new BusinessException(ErrorCodes.PHONE_EXISTS, "手机号已存在");
             }
         }
         LambdaQueryWrapper<SysRole> roleWrapper = new LambdaQueryWrapper<>();
@@ -175,7 +180,7 @@ public class SysUserServiceImpl implements SysUserService {
         roleWrapper.eq(SysRole::getStatus, CommonConstants.STATUS_ENABLED);
         SysRole role = roleMapper.selectOne(roleWrapper);
         if (role == null) {
-            throw new BizException(ErrorCodes.BAD_REQUEST, "角色不存在或已停用");
+            throw new BusinessException(ErrorCodes.BAD_REQUEST, "角色不存在或已停用");
         }
 
         SysUser update = BeanUtil.copyProperties(dto, SysUser.class);
@@ -198,10 +203,10 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public void updateStatus(Long id, Integer status) {
         if (status == null || (status != CommonConstants.STATUS_ENABLED && status != CommonConstants.STATUS_DISABLED)) {
-            throw new BizException(ErrorCodes.BAD_REQUEST, "状态值不合法");
+            throw new BusinessException(ErrorCodes.BAD_REQUEST, "状态值不合法");
         }
         if (userMapper.selectById(id) == null) {
-            throw new BizException(ErrorCodes.USER_NOT_FOUND, "用户不存在");
+            throw new BusinessException(ErrorCodes.USER_NOT_FOUND, "用户不存在");
         }
         SysUser update = new SysUser();
         update.setId(id);
@@ -215,7 +220,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public void resetPassword(Long id, String password) {
         if (userMapper.selectById(id) == null) {
-            throw new BizException(ErrorCodes.USER_NOT_FOUND, "用户不存在");
+            throw new BusinessException(ErrorCodes.USER_NOT_FOUND, "用户不存在");
         }
         SysUser update = new SysUser();
         update.setId(id);

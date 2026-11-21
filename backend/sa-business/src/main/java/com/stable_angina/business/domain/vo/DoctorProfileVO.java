@@ -1,6 +1,8 @@
 package com.stable_angina.business.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,9 +19,11 @@ import java.time.LocalDateTime;
 public class DoctorProfileVO implements Serializable {
 
     @Schema(description = "档案主键")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @Schema(description = "账号主键（sys_user.id）")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @Schema(description = "登录账号")

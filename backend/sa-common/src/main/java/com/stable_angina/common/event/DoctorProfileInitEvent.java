@@ -1,4 +1,4 @@
-package com.stable_angina.system.event;
+package com.stable_angina.common.event;
 
 import lombok.Getter;
 

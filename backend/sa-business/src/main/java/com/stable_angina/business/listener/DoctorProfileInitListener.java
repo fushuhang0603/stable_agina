@@ -2,7 +2,7 @@ package com.stable_angina.business.listener;
 
 import com.stable_angina.business.domain.entity.DoctorProfile;
 import com.stable_angina.business.mapper.DoctorProfileMapper;
-import com.stable_angina.system.event.DoctorProfileInitEvent;
+import com.stable_angina.common.event.DoctorProfileInitEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;

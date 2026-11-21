@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.stable_angina.common.api.ErrorCodes;
 import com.stable_angina.common.constant.AuthConstants;
 import com.stable_angina.common.constant.CommonConstants;
-import com.stable_angina.common.exception.BizException;
+import com.stable_angina.common.api.BusinessException;
 import com.stable_angina.system.domain.dto.LoginDTO;
 import com.stable_angina.system.domain.entity.SysLoginLog;
 import com.stable_angina.system.domain.entity.SysRole;
@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
             loginLogEntity.setMsg("账号或密码错误");
             loginLogEntity.setLoginTime(LocalDateTime.now());
             loginLogMapper.insert(loginLogEntity);
-            throw new BizException(ErrorCodes.BAD_CREDENTIALS, "账号或密码错误");
+            throw new BusinessException(ErrorCodes.BAD_CREDENTIALS, "账号或密码错误");
         }
         if (user.getStatus() == null || user.getStatus() != CommonConstants.STATUS_ENABLED) {
             SysLoginLog loginLogEntity = new SysLoginLog();
@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
             loginLogEntity.setMsg("账号已停用");
             loginLogEntity.setLoginTime(LocalDateTime.now());
             loginLogMapper.insert(loginLogEntity);
-            throw new BizException(ErrorCodes.USER_DISABLED, "账号已停用，请联系管理员");
+            throw new BusinessException(ErrorCodes.USER_DISABLED, "账号已停用，请联系管理员");
         }
 
         LoginUser loginUser = buildLoginUser(user);
@@ -118,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
     public LoginVO refresh() {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         if (loginUser == null) {
-            throw new BizException(ErrorCodes.UNAUTHORIZED, "未登录或登录已过期");
+            throw new BusinessException(ErrorCodes.UNAUTHORIZED, "未登录或登录已过期");
         }
         // 令牌轮换：旧 jti 作废，签发新令牌
         tokenStore.remove(loginUser.getUserId(), loginUser.getJti());
@@ -131,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
     public UserInfoVO currentUser() {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         if (loginUser == null) {
-            throw new BizException(ErrorCodes.UNAUTHORIZED, "未登录或登录已过期");
+            throw new BusinessException(ErrorCodes.UNAUTHORIZED, "未登录或登录已过期");
         }
         return loginUser.toUserInfoVO();
     }

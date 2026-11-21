@@ -3,7 +3,7 @@ package com.stable_angina.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stable_angina.common.api.ErrorCodes;
-import com.stable_angina.common.exception.BizException;
+import com.stable_angina.common.api.BusinessException;
 import com.stable_angina.system.domain.dto.SysRoleGrantDTO;
 import com.stable_angina.system.domain.entity.SysRole;
 import com.stable_angina.system.domain.entity.SysRoleMenu;
@@ -37,7 +37,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public List<Long> menuIds(Long roleId) {
         if (roleMapper.selectById(roleId) == null) {
-            throw new BizException(ErrorCodes.BAD_REQUEST, "角色不存在");
+            throw new BusinessException(ErrorCodes.BAD_REQUEST, "角色不存在");
         }
         return roleMapper.selectMenuIdsByRoleId(roleId);
     }
@@ -47,7 +47,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     public void grant(Long roleId, SysRoleGrantDTO dto) {
         SysRole role = roleMapper.selectById(roleId);
         if (role == null) {
-            throw new BizException(ErrorCodes.BAD_REQUEST, "角色不存在");
+            throw new BusinessException(ErrorCodes.BAD_REQUEST, "角色不存在");
         }
 
         SysRole update = BeanUtil.copyProperties(dto, SysRole.class);

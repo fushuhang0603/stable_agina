@@ -1,5 +1,6 @@
 package com.stable_angina.common.exception;
 
+import com.stable_angina.common.api.BusinessException;
 import com.stable_angina.common.api.ErrorCodes;
 import com.stable_angina.common.api.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BizException.class)
-    public Result<Void> handleBiz(BizException e) {
+    @ExceptionHandler(BusinessException.class)
+    public Result<Void> handleBiz(BusinessException e) {
         log.warn("业务异常: code={}, msg={}", e.getCode(), e.getMessage());
         return Result.fail(e.getCode(), e.getMessage());
     }

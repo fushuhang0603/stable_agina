@@ -14,7 +14,7 @@ import java.util.List;
 public class PageResult<T> implements Serializable {
 
     @Schema(description = "当前页数据")
-    private List<T> list;
+    private List<T> records;
 
     @Schema(description = "总条数")
     private long total;
@@ -24,13 +24,4 @@ public class PageResult<T> implements Serializable {
 
     @Schema(description = "每页条数")
     private long pageSize;
-
-    public static <T> PageResult<T> of(List<T> list, long total, long pageNum, long pageSize) {
-        PageResult<T> result = new PageResult<>();
-        result.list = list;
-        result.total = total;
-        result.pageNum = pageNum;
-        result.pageSize = pageSize;
-        return result;
-    }
 }

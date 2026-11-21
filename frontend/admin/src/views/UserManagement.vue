@@ -118,7 +118,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import Card from '../components/Card.vue'
 import Chip from '../components/Chip.vue'
@@ -127,7 +127,6 @@ import StatCard from '../components/StatCard.vue'
 import request from '../utils/request'
 import { toast } from '../utils/toast'
 
-const roles = ref([])
 const stats = reactive({ total: 0, enabled: 0, disabled: 0, doctor: 0 })
 const rows = ref([])
 const total = ref(0)
@@ -138,15 +137,15 @@ const saving = ref(false)
 
 const filters = reactive({ username: '', realName: '', phone: '', roleKey: undefined, status: undefined })
 
-const roleOptions = computed(() => roles.value.map((role) => ({ value: role.roleKey, label: role.roleName })))
+const roleOptions = [
+  { value: 'SUPER_ADMIN', label: '超级管理员' },
+  { value: 'DOCTOR', label: '医生' },
+  { value: 'PATIENT', label: '患者' }
+]
 const statusOptions = [
   { value: 1, label: '启用' },
   { value: 0, label: '停用' }
 ]
-
-async function loadRoles() {
-  roles.value = await request.get('/api/system/roles')
-}
 
 async function loadStats() {
   Object.assign(stats, await request.get('/api/system/users/stats'))
@@ -166,7 +165,7 @@ async function loadPage() {
         pageSize
       }
     })
-    rows.value = data.list
+    rows.value = data.records
     total.value = data.total
   } finally {
     loading.value = false
@@ -208,7 +207,7 @@ function openCreate() {
     username: '',
     password: '',
     realName: '',
-    roleKey: roles.value.find((role) => role.roleKey === 'DOCTOR')?.roleKey || roles.value[0]?.roleKey || '',
+    roleKey: 'DOCTOR',
     phone: '',
     hospital: '附属医院',
     department: '心内科'
@@ -268,7 +267,7 @@ async function submit() {
       toast(`账号 ${form.username} 已创建`)
     }
     showModal.value = false
-    await Promise.all([loadPage(), loadStats(), loadRoles()])
+    await Promise.all([loadPage(), loadStats()])
   } catch (e) {
     toast(e.message || '操作失败')
   } finally {
@@ -306,7 +305,6 @@ async function toggleStatus(row) {
 }
 
 onMounted(async () => {
-  await loadRoles()
   await Promise.all([loadPage(), loadStats()])
 })
 </script>

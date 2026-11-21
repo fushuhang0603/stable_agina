@@ -3,15 +3,33 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.stable_angina.business.mapper.DoctorProfileMapper">
 
-    <select id="selectDoctorPage" resultType="com.stable_angina.system.domain.entity.SysUser">
-        SELECT u.*
-        FROM sys_user u
-        WHERE u.deleted = 0
-          AND EXISTS (SELECT 1
-                      FROM sys_user_role ur
-                               INNER JOIN sys_role r ON r.id = ur.role_id AND r.deleted = 0
-                      WHERE ur.user_id = u.id
-                        AND r.role_key = 'DOCTOR')
+    <select id="selectDoctorPage" resultType="com.stable_angina.business.domain.vo.DoctorProfileVO">
+        SELECT p.id,
+               p.user_id,
+               u.username,
+               u.real_name,
+               u.phone,
+               u.title,
+               u.hospital,
+               u.department,
+               p.position,
+               p.specialty,
+               p.license_no,
+               p.license_type,
+               p.practice_scope,
+               p.cert_no,
+               p.issuing_authority,
+               p.license_expire_date,
+               p.introduction,
+               p.experience,
+               p.schedule,
+               p.registration_fee,
+               p.max_patients,
+               u.status,
+               p.update_time
+        FROM doctor_profile p
+                 INNER JOIN sys_user u ON u.id = p.user_id AND u.deleted = 0
+        WHERE p.deleted = 0
         <if test="query.realName != null and query.realName != ''">
             AND u.real_name LIKE CONCAT('%', #{query.realName}, '%')
         </if>
@@ -19,22 +37,18 @@
             AND u.phone LIKE CONCAT('%', #{query.phone}, '%')
         </if>
         <if test="query.licenseNo != null and query.licenseNo != ''">
-            AND EXISTS (SELECT 1
-                        FROM doctor_profile p
-                        WHERE p.user_id = u.id
-                          AND p.deleted = 0
-                          AND p.license_no LIKE CONCAT('%', #{query.licenseNo}, '%'))
+            AND p.license_no LIKE CONCAT('%', #{query.licenseNo}, '%')
         </if>
         <if test="query.profileStatus != null and query.profileStatus == 1">
-            AND EXISTS (SELECT 1 FROM doctor_profile p2 WHERE p2.user_id = u.id AND p2.deleted = 0)
+            AND p.id IS NOT NULL
         </if>
         <if test="query.profileStatus != null and query.profileStatus == 0">
-            AND NOT EXISTS (SELECT 1 FROM doctor_profile p3 WHERE p3.user_id = u.id AND p3.deleted = 0)
+            AND 1 = 0
         </if>
         <if test="query.status != null">
             AND u.status = #{query.status}
         </if>
-        ORDER BY u.create_time DESC, u.id DESC
+        ORDER BY p.update_time DESC, p.id DESC
     </select>
 
     <select id="selectDoctorDetail" resultType="com.stable_angina.business.domain.vo.DoctorProfileVO">

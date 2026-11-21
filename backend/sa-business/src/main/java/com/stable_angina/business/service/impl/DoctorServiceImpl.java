@@ -13,7 +13,7 @@ import com.stable_angina.business.service.DoctorService;
 import com.stable_angina.common.api.ErrorCodes;
 import com.stable_angina.common.api.PageResult;
 import com.stable_angina.common.constant.CommonConstants;
-import com.stable_angina.common.exception.BizException;
+import com.stable_angina.common.api.BusinessException;
 import com.stable_angina.system.domain.entity.SysUser;
 import com.stable_angina.system.mapper.SysUserMapper;
 import com.stable_angina.system.security.SecurityUtils;
@@ -24,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -42,35 +40,19 @@ public class DoctorServiceImpl implements DoctorService {
         long current = query.getPageNum() < 1 ? 1 : query.getPageNum();
         long size = query.getPageSize() < 1 ? 10 : Math.min(query.getPageSize(), CommonConstants.MAX_PAGE_SIZE);
 
-        Page<SysUser> userPage = doctorProfileMapper.selectDoctorPage(new Page<>(current, size), query);
-        List<SysUser> users = userPage.getRecords();
+        Page<DoctorProfileVO> voPage = doctorProfileMapper.selectDoctorPage(new Page<>(current, size), query);
+        List<DoctorProfileVO> rows = voPage.getRecords();
+        rows.forEach(vo -> {
+            vo.setHasProfile(true);
+            vo.setStatusText(vo.getStatus() != null && vo.getStatus() == CommonConstants.STATUS_ENABLED ? "启用" : "停用");
+        });
 
-        // 批量补充档案，未建档医生同样出现在列表中
-        Map<Long, DoctorProfile> profileMap = new HashMap<>();
-        List<Long> userIds = users.stream().map(SysUser::getId).toList();
-        if (!userIds.isEmpty()) {
-            LambdaQueryWrapper<DoctorProfile> profileWrapper = new LambdaQueryWrapper<>();
-            profileWrapper.in(DoctorProfile::getUserId, userIds);
-            doctorProfileMapper.selectList(profileWrapper)
-                    .forEach(profile -> profileMap.put(profile.getUserId(), profile));
-        }
-
-        List<DoctorProfileVO> rows = users.stream().map(user -> {
-            DoctorProfileVO vo = BeanUtil.copyProperties(user, DoctorProfileVO.class);
-            vo.setUserId(user.getId());
-            vo.setId(null);
-            DoctorProfile profile = profileMap.get(user.getId());
-            if (profile != null) {
-                BeanUtil.copyProperties(profile, vo);
-                vo.setHasProfile(true);
-            } else {
-                vo.setHasProfile(false);
-            }
-            vo.setStatusText(user.getStatus() != null && user.getStatus() == CommonConstants.STATUS_ENABLED ? "启用" : "停用");
-            return vo;
-        }).toList();
-
-        return PageResult.of(rows, userPage.getTotal(), current, size);
+        PageResult<DoctorProfileVO> result = new PageResult<>();
+        result.setRecords(rows);
+        result.setTotal(voPage.getTotal());
+        result.setPageNum(current);
+        result.setPageSize(size);
+        return result;
     }
 
     @Override
@@ -82,7 +64,7 @@ public class DoctorServiceImpl implements DoctorService {
     public DoctorProfileVO detail(Long userId) {
         DoctorProfileVO vo = doctorProfileMapper.selectDoctorDetail(userId);
         if (vo == null) {
-            throw new BizException(ErrorCodes.USER_NOT_FOUND, "医生账号不存在");
+            throw new BusinessException(ErrorCodes.USER_NOT_FOUND, "医生账号不存在");
         }
         vo.setStatusText(vo.getStatus() != null && vo.getStatus() == CommonConstants.STATUS_ENABLED ? "启用" : "停用");
         return vo;
@@ -92,14 +74,14 @@ public class DoctorServiceImpl implements DoctorService {
     @Transactional(rollbackFor = Exception.class)
     public void update(Long userId, DoctorProfileUpdateDTO dto) {
         if (userMapper.selectById(userId) == null) {
-            throw new BizException(ErrorCodes.USER_NOT_FOUND, "医生账号不存在");
+            throw new BusinessException(ErrorCodes.USER_NOT_FOUND, "医生账号不存在");
         }
         if (StringUtils.hasText(dto.getPhone())) {
             LambdaQueryWrapper<SysUser> phoneWrapper = new LambdaQueryWrapper<>();
             phoneWrapper.eq(SysUser::getPhone, dto.getPhone());
             phoneWrapper.ne(SysUser::getId, userId);
             if (userMapper.selectCount(phoneWrapper) > 0) {
-                throw new BizException(ErrorCodes.PHONE_EXISTS, "手机号已存在");
+                throw new BusinessException(ErrorCodes.PHONE_EXISTS, "手机号已存在");
             }
         }
 

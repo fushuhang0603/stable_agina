@@ -259,7 +259,7 @@ async function loadPage() {
         pageSize
       }
     })
-    rows.value = data.list
+    rows.value = data.records
     total.value = data.total
   } finally {
     loading.value = false
