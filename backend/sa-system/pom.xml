@@ -22,13 +22,11 @@
             <artifactId>sa-common</artifactId>
         </dependency>
 
-        <!-- Spring Security 6.5.x（由 Boot 3.5.4 BOM 管理） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>

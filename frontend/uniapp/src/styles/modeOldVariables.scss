@@ -1,0 +1,37 @@
+/* ==========================================================================
+   适老模式（system-mode-old）
+   对齐和仁 modeOldVariables.scss：整体放大字号与控件尺寸，局部可用 .keep-normal 还原
+   使用方式：模式类挂在页面根节点（.g-page）上，变量向下继承
+   ========================================================================== */
+:root.system-mode-old,
+page.system-mode-old,
+.system-mode-old {
+  --hr-font-size-xxl: 56rpx;
+  --hr-font-size-xl: 44rpx;
+  --hr-font-size-base: 40rpx;
+  --hr-font-size-s: 38rpx;
+  --hr-font-size-xs: 36rpx;
+  --hr-font-size-xxs: 34rpx;
+  --hr-font-size-xxxs: 32rpx;
+  --h-size-40: 64rpx;
+  --h-size-18: 40rpx;
+  --h-size-46: 64rpx;
+
+  /* 反向还原：不希望被放大的区域（图例、角标等）加上 .keep-normal */
+  .keep-normal {
+    --hr-font-size-xxl: 48rpx;
+    --hr-font-size-xl: 36rpx;
+    --hr-font-size-base: 32rpx;
+    --hr-font-size-s: 30rpx;
+    --hr-font-size-xs: 28rpx;
+    --hr-font-size-xxs: 26rpx;
+    --hr-font-size-xxxs: 24rpx;
+    --h-size-40: 40rpx;
+    --h-size-18: 18rpx;
+    --h-size-46: 46rpx;
+  }
+
+  .f44 {
+    font-size: 56rpx !important;
+  }
+}

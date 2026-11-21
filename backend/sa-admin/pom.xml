@@ -14,7 +14,7 @@
     <artifactId>sa-admin</artifactId>
     <packaging>jar</packaging>
     <name>sa-admin</name>
-    <description>启动聚合模块：唯一可执行 jar（Application + 配置 + Flyway 脚本 + 基础设施 Bean）</description>
+    <description>启动聚合模块</description>
 
     <dependencies>
         <dependency>
@@ -22,7 +22,6 @@
             <artifactId>sa-business</artifactId>
         </dependency>
 
-        <!-- Flyway：版本化建表，替代 init.sql -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -32,7 +31,6 @@
             <artifactId>flyway-mysql</artifactId>
         </dependency>
 
-        <!-- 数据库驱动（运行期） -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
@@ -58,15 +56,13 @@
     </dependencies>
 
     <build>
-        <!-- 产物固定为 sa-admin.jar，与 deploy/Dockerfile.sa-admin 的 ARG JAR_FILE 对应 -->
         <finalName>sa-admin</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- repackage 由 spring-boot-starter-parent 默认绑定，无需重复声明 executions -->
                 <configuration>
-                    <mainClass>com.stable.angina.StableAnginaApplication</mainClass>
+                    <mainClass>com.stable_angina.StableAnginaApplication</mainClass>
                     <layers>
                         <enabled>true</enabled>
                     </layers>

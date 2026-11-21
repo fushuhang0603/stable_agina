@@ -1,0 +1,92 @@
+/* ==========================================================================
+   和仁 H5 设计令牌（L2 事实标准）
+   命名规则：--hr-{语义}-color-{6 主色 / 1 浅底 / 3 浅阶 / 7 按下}
+   基准：375px 设计稿，尺寸统一 rpx
+   说明：适老 / 中医风等模式变量已拆到 modeOldVariables.scss、modeStyleVariables.scss
+   ========================================================================== */
+:root,
+page,
+component {
+  /* 中性色（注意：无 neutral-color-6，历史跳号） */
+  --hr-neutral-color-1: #f6f6f6;
+  --hr-neutral-color-2: #e6e6e6;
+  --hr-neutral-color-3: #dddddd;
+  --hr-neutral-color-4: #cccccc;
+  --hr-neutral-color-5: #bbbbbb;
+  --hr-neutral-color-7: #888888;
+  --hr-neutral-color-8: #666666;
+  --hr-neutral-color-9: #444444;
+  --hr-neutral-color-10: #111111;
+  --hr-neutral-color-11: #f3f3f3;
+
+  /* 品牌色 */
+  --hr-brand-color-6: #296fff;
+  --hr-brand-color-7: #0050f5;
+  --hr-brand-color-1: #e9f0ff;
+  --hr-brand-color-2: #ccddff;
+  --hr-brand-color-3: #9ebeff;
+  --hr-brand-color-3-light: #ebf1ff;
+  --hr-brand-color-6-light: #2970ff0a;
+  --hr-brand-color-6-light-2: #296fff33;
+  --hr-brand-color-6-light-3: #53a8ff;
+
+  /* 语义色 */
+  --hr-warning-color-1: #fff3e0;
+  --hr-warning-color-3: #ffd58b;
+  --hr-warning-color-6: #ff8a00;
+  --hr-warning-color-7: #d26900;
+
+  --hr-error-color-1: #ffeee8;
+  --hr-error-color-3: #ffb5a5;
+  --hr-error-color-6: #ff5040;
+  --hr-error-color-7: #d23028;
+
+  --hr-success-color-1: #e7fff8;
+  --hr-success-color-3: #7be2cb;
+  --hr-success-color-6: #00b39e;
+  --hr-success-color-7: #00998d;
+
+  /* 边框与通栏底色 */
+  --h-color-white: #ffffff;
+  --h-color-border: #f1f1f1;
+  --h-color-border-1: #cfeae6;
+  --hr-banner-color-1: #eef3ff;
+  --hr-banner-color-2: #effbfa;
+
+  /* 字号 */
+  --hr-font-size-xxl: 48rpx;
+  --hr-font-size-xl: 36rpx;
+  --hr-font-size-base: 32rpx;
+  --hr-font-size-s: 30rpx;
+  --hr-font-size-xs: 28rpx;
+  --hr-font-size-xxs: 26rpx;
+  --hr-font-size-xxxs: 24rpx;
+
+  /* 尺寸 */
+  --h-size-18: 18rpx;
+  --h-size-40: 40rpx;
+  --h-size-46: 46rpx;
+  --h-iconfont-48: 48rpx;
+  --h-iconfont-60: 60rpx;
+  --h-iconfont-64: 64rpx;
+  --h-margin-24: 24rpx;
+  --h-popup-max-height: 80vh;
+
+  /* 动效 */
+  --animate-duration: 800ms;
+  --animate-delay: 0.9s;
+
+  /* 圆角（项目扩展，和仁原工程无此组） */
+  --hr-radius-8: 8rpx;
+  --hr-radius-12: 12rpx;
+  --hr-radius-16: 16rpx;
+  --hr-radius-24: 24rpx;
+
+  /* 字重 */
+  --h-weight-1: 500;
+  --h-weight-2: 600;
+
+  /* 阴影（项目扩展，和仁原工程无此组） */
+  --h-shadow-card: 0 4rpx 20rpx rgba(17, 17, 17, 0.04);
+  --h-shadow-footer: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,90 @@
+/* ==========================================================================
+   按钮体系（buttom.scss —— 与和仁工程同名同拼写）
+   <button class="btn btn-primary">提交</button>
+   <button class="btn btn-normal btn-border">取消</button>
+   说明：.btn 默认白字，需与 btn-primary / btn-normal / btn-border 等组合使用
+   ========================================================================== */
+.btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  border-radius: 16rpx;
+  color: var(--h-color-white);
+  font-size: var(--hr-font-size-xl);
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  animation-name: fadeIn;
+  animation-fill-mode: both;
+  animation-duration: 0.6s;
+
+  &::after {
+    display: none;
+  }
+
+  &.btn-primary {
+    background-color: var(--hr-brand-color-6);
+
+    &:active {
+      background-color: var(--hr-brand-color-7);
+    }
+  }
+
+  &.btn-border {
+    border: 2rpx solid var(--hr-neutral-color-4);
+  }
+
+  &.btn-normal {
+    color: var(--hr-neutral-color-10);
+    background-color: #fff;
+  }
+
+  &.btn-error {
+    color: var(--hr-error-color-6);
+    border-color: var(--hr-error-color-6);
+  }
+
+  &.btn-warning {
+    background-color: var(--hr-warning-color-6);
+  }
+
+  &.btn-plain {
+    background-color: transparent;
+
+    &.btn-primary {
+      color: var(--hr-brand-color-6);
+      border-color: var(--hr-brand-color-6);
+    }
+
+    &.btn-error {
+      border-color: var(--hr-error-color-6);
+    }
+  }
+
+  &.btn-round {
+    border-radius: 14px;
+  }
+
+  &.btn-size-small {
+    padding: 16rpx 24rpx;
+    border-radius: 99px;
+    font-size: var(--hr-font-size-xs);
+    line-height: 1em;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  &.btn-disabled {
+    pointer-events: none;
+    opacity: 0.3 !important;
+  }
+
+  /* 项目扩展：和仁原工程无此类，本项目页面按整行按钮使用 */
+  &.btn-block {
+    width: 100%;
+  }
+}

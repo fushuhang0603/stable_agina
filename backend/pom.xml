@@ -29,25 +29,17 @@
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <!-- Spring Boot 3.5.4（spring-boot-starter-parent 已导入其依赖 BOM，此处仅作版本记录） -->
         <spring-boot.version>3.5.4</spring-boot.version>
-
-        <!-- Spring AI 1.1.x：DeepSeek 走 OpenAI 兼容协议 -->
         <spring-ai.version>1.1.2</spring-ai.version>
         <mybatis-plus.version>3.5.12</mybatis-plus.version>
         <jjwt.version>0.12.6</jjwt.version>
         <minio.version>8.5.17</minio.version>
         <springdoc.version>2.8.13</springdoc.version>
         <hutool.version>5.8.39</hutool.version>
-        <!-- Flyway 版本由 spring-boot-dependencies 统一管理（11.7.x），此处不重复声明 -->
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot 依赖版本由 spring-boot-starter-parent 统一管理，无需重复 import -->
-
-            <!-- Spring AI BOM：统一 ChatClient / ChatOptions / starter 版本 -->
             <dependency>
                 <groupId>org.springframework.ai</groupId>
                 <artifactId>spring-ai-bom</artifactId>
@@ -56,7 +48,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- MyBatis-Plus BOM：含 mybatis-plus-spring-boot3-starter 与 mybatis-plus-jsqlparser -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-bom</artifactId>
@@ -65,7 +56,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- JWT -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
@@ -82,28 +72,24 @@
                 <version>${jjwt.version}</version>
             </dependency>
 
-            <!-- 对象存储 -->
             <dependency>
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
             </dependency>
 
-            <!-- 接口文档 -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc.version}</version>
             </dependency>
 
-            <!-- 工具 -->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
 
-            <!-- 内部模块：统一版本，子模块引用时不写 version -->
             <dependency>
                 <groupId>com.stable</groupId>
                 <artifactId>sa-common</artifactId>
