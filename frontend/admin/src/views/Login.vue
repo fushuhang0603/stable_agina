@@ -136,7 +136,7 @@ async function onSubmit() {
         : '/'
     router.replace(redirect)
   } catch (error) {
-    toast(error?.message || '登录失败，请检查账号或密码')
+    toast.error(error?.message || '登录失败，请检查账号或密码')
   } finally {
     loading.value = false
   }

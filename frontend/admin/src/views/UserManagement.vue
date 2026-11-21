@@ -269,7 +269,7 @@ async function submit() {
     showModal.value = false
     await Promise.all([loadPage(), loadStats()])
   } catch (e) {
-    toast(e.message || '操作失败')
+    toast.error(e.message || '操作失败')
   } finally {
     saving.value = false
   }
@@ -300,7 +300,7 @@ async function toggleStatus(row) {
     toast(`账号 ${row.username} 已${nextStatus === 1 ? '启用' : '停用'}`)
     await Promise.all([loadPage(), loadStats()])
   } catch (e) {
-    toast(e.message || '操作失败')
+    toast.error(e.message || '操作失败')
   }
 }
 

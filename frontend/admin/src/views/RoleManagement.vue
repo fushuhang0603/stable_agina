@@ -116,7 +116,7 @@ async function loadRoles() {
       selectedId.value = roles.value[0].id
     }
   } catch (e) {
-    toast(e.message || '角色列表加载失败')
+    toast.error(e.message || '角色列表加载失败')
   } finally {
     loadingRoles.value = false
   }
@@ -126,7 +126,7 @@ async function loadMenuTree() {
   try {
     menuTree.value = await request.get('/api/system/menus/tree')
   } catch (e) {
-    toast(e.message || '菜单权限加载失败')
+    toast.error(e.message || '菜单权限加载失败')
   }
 }
 
@@ -141,7 +141,7 @@ async function loadRoleMenus(roleId) {
     checked.value = new Set(ids || [])
   } catch (e) {
     checked.value = new Set()
-    toast(e.message || '权限加载失败')
+    toast.error(e.message || '权限加载失败')
   } finally {
     loadingPerms.value = false
   }
@@ -191,7 +191,7 @@ async function save() {
     await loadRoles()
     await loadRoleMenus(selectedRole.value.id)
   } catch (e) {
-    toast(e.message || '保存失败')
+    toast.error(e.message || '保存失败')
   } finally {
     saving.value = false
   }
