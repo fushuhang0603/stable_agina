@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.stable</groupId>
+        <artifactId>stable-angina</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>sa-business</artifactId>
+    <packaging>jar</packaging>
+    <name>sa-business</name>
+    <description>业务模块：患者档案/监测/用药/随访/AI 摘要/文件/通知/统计/定时任务</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.stable</groupId>
+            <artifactId>sa-system</artifactId>
+        </dependency>
+
+        <!-- 大模型：DeepSeek 走 OpenAI 兼容协议（ChatClient + ChatOptions） -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-openai</artifactId>
+        </dependency>
+
+        <!-- 对象存储：报告/附件，预签名 URL 直连 -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- MyBatis XML 按业务域分目录存放：resources/mapper/{domain}/*.xml -->
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+</project>

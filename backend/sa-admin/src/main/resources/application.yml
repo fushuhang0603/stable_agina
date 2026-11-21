@@ -1,0 +1,95 @@
+# =====================================================================
+# 公共配置（所有环境共享）
+# 规格来源：docs/01_后端架构设计.md §3.2 §6 §7 §13
+# 本地端口 9003 + context-path /stableanginaapi；容器内由 prod profile 覆盖为 8080
+# =====================================================================
+server:
+  port: 9003
+  servlet:
+    context-path: /stableanginaapi
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  application:
+    name: stable-angina
+  profiles:
+    # 本地默认 local；容器内通过环境变量 SPRING_PROFILES_ACTIVE=prod 覆盖
+    active: local
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  # Flyway：数据库结构演进的唯一入口，禁止手工改表
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    encoding: UTF-8
+    table: flyway_schema_history
+  # Spring AI：DeepSeek 走 OpenAI 兼容协议
+  ai:
+    openai:
+      base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
+      api-key: ${DEEPSEEK_API_KEY:sk-mock-placeholder}
+      chat:
+        completions-path: /v1/chat/completions
+        options:
+          model: deepseek-chat
+          temperature: 0.2
+          max-tokens: 1200
+
+# MyBatis-Plus 全局约定
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.stable.angina.**.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+  global-config:
+    banner: false
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 接口文档
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  packages-to-scan: com.stable.angina
+
+# ---------------------------------------------------------------------
+# 项目自定义配置（前缀 sa.*，统一由 @ConfigurationProperties 绑定）
+# ---------------------------------------------------------------------
+sa:
+  jwt:
+    # 生产环境必须通过环境变量注入，长度 >= 32 字节（HS256）
+    secret: ${JWT_SECRET:stable-angina-dev-only-secret-key-please-change-in-prod}
+    # Access Token 有效期：2 小时（需求 §6.1）
+    access-token-expire-minutes: 120
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://127.0.0.1:9000}
+    access-key: ${MINIO_ROOT_USER:minioadmin}
+    secret-key: ${MINIO_ROOT_PASSWORD:minioadmin}
+    bucket: ${MINIO_BUCKET:stable-angina}
+
+# AI Mock 开关：暂无 DeepSeek Key 时返回固定六段样例（详见架构 §7.6）
+ai:
+  mock: ${AI_MOCK:true}
+
+logging:
+  level:
+    com.stable.angina: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

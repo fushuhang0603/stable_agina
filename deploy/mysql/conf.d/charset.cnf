@@ -1,0 +1,14 @@
+[mysqld]
+# 字符集与时区（与后端 application-*.yml 保持一致）
+character-set-server = utf8mb4
+collation-server = utf8mb4_general_ci
+default-time-zone = '+08:00'
+max_connections = 300
+# 大小写不敏感的表名（Windows 开发与 Linux 生产一致，避免迁移差异）
+lower_case_table_names = 1
+
+[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4

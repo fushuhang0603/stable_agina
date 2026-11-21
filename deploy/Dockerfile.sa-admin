@@ -1,0 +1,24 @@
+# =====================================================================
+# 后端镜像：基于 sa-admin 聚合 jar（eclipse-temurin:21-jre）
+# 构建上下文为仓库根目录（见 docker-compose.yml 的 build.context: ..）
+# 前置：mvn -f backend/pom.xml clean package -DskipTests
+# =====================================================================
+FROM eclipse-temurin:21-jre
+
+LABEL maintainer="stable-angina" \
+      description="稳定性心绞痛患者随访管理系统 - 后端"
+
+ARG JAR_FILE=backend/sa-admin/target/sa-admin.jar
+
+ENV TZ=Asia/Shanghai \
+    SPRING_PROFILES_ACTIVE=prod \
+    JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Shanghai"
+
+WORKDIR /app
+RUN mkdir -p /app/logs
+
+COPY ${JAR_FILE} /app/app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

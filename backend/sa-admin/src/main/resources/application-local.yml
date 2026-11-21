@@ -1,0 +1,42 @@
+# =====================================================================
+# 本地开发环境：连接 docker compose 起的 mysql / redis / minio
+# 启动中间件：cd deploy && docker compose up -d mysql redis minio
+# =====================================================================
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:stable_angina}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_ROOT_PASSWORD:StableAngina@123}
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      pool-name: StableAnginaHikari
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:StableAngina@123}
+      database: 0
+      timeout: 3s
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+mybatis-plus:
+  configuration:
+    # 本地打印 SQL，便于调试
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+sa:
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://127.0.0.1:9000}
+
+logging:
+  level:
+    com.stable.angina: debug
+    org.springframework.security: info
+    org.flywaydb: info

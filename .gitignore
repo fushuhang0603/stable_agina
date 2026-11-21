@@ -1,0 +1,36 @@
+# ---------- Java / Maven ----------
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.log
+
+# ---------- IDE ----------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+
+# ---------- Node / 前端 ----------
+node_modules/
+dist/
+unpackage/
+.npm/
+.pnpm-store/
+
+# ---------- 环境与密钥（禁止提交） ----------
+.env
+.env.local
+.env.*.local
+deploy/.env
+
+# ---------- 运行期 ----------
+logs/
+*.pid
+.DS_Store
+Thumbs.db
