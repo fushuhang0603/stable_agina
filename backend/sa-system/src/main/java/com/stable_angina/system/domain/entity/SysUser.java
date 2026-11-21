@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
 /**
- * 系统用户（管理员 / 医生）
+ * 系统用户
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

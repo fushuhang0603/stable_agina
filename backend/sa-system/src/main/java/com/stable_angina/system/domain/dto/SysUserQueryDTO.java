@@ -10,8 +10,14 @@ import lombok.Data;
 @Schema(description = "用户分页查询入参")
 public class SysUserQueryDTO {
 
-    @Schema(description = "关键字：用户名 / 姓名 / 手机号", example = "张")
-    private String keyword;
+    @Schema(description = "用户名（模糊匹配）", example = "zhang")
+    private String username;
+
+    @Schema(description = "姓名（模糊匹配）", example = "张")
+    private String realName;
+
+    @Schema(description = "手机号（模糊匹配）", example = "139")
+    private String phone;
 
     @Schema(description = "角色标识：SUPER_ADMIN / DOCTOR / PATIENT", example = "DOCTOR")
     private String roleKey;

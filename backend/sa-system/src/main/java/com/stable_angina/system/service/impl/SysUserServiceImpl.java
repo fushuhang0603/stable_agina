@@ -2,6 +2,7 @@ package com.stable_angina.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stable_angina.common.api.ErrorCodes;
 import com.stable_angina.common.api.PageResult;
 import com.stable_angina.common.constant.CommonConstants;
@@ -14,6 +15,7 @@ import com.stable_angina.system.domain.entity.SysUser;
 import com.stable_angina.system.domain.entity.SysUserRole;
 import com.stable_angina.system.domain.vo.SysUserStatsVO;
 import com.stable_angina.system.domain.vo.SysUserVO;
+import com.stable_angina.system.event.DoctorProfileInitEvent;
 import com.stable_angina.system.mapper.SysRoleMapper;
 import com.stable_angina.system.mapper.SysUserMapper;
 import com.stable_angina.system.mapper.SysUserRoleMapper;
@@ -21,13 +23,18 @@ import com.stable_angina.system.security.SecurityUtils;
 import com.stable_angina.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,27 +48,54 @@ public class SysUserServiceImpl implements SysUserService {
     private SysUserRoleMapper userRoleMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Override
     public PageResult<SysUserVO> page(SysUserQueryDTO query) {
-        long pageNum = Math.max(query.getPageNum(), 1);
-        long pageSize = Math.min(Math.max(query.getPageSize(), 1), 100);
-        long offset = (pageNum - 1) * pageSize;
+        long current = query.getPageNum() < 1 ? 1 : query.getPageNum();
+        long size = query.getPageSize() < 1 ? 10 : Math.min(query.getPageSize(), CommonConstants.MAX_PAGE_SIZE);
 
-        long total = userMapper.countUser(query);
-        List<SysUserVO> rows = userMapper.selectUserPage(query, offset, pageSize);
-        // 展示字段：机构拼接、多角色取第一个、状态文本
-        rows.forEach(vo -> {
-            String org = StringUtils.hasText(vo.getHospital()) ? vo.getHospital() : "";
-            if (StringUtils.hasText(vo.getDepartment())) {
-                org = StringUtils.hasText(org) ? org + " / " + vo.getDepartment() : vo.getDepartment();
+        Page<SysUser> userPage = userMapper.selectUserPage(new Page<>(current, size), query);
+        List<SysUser> users = userPage.getRecords();
+
+        // 批量补充角色，展示多角色中的第一个
+        Map<Long, List<SysRole>> roleMap = new HashMap<>();
+        List<Long> userIds = users.stream().map(SysUser::getId).toList();
+        if (!userIds.isEmpty()) {
+            LambdaQueryWrapper<SysUserRole> relationWrapper = new LambdaQueryWrapper<>();
+            relationWrapper.in(SysUserRole::getUserId, userIds);
+            List<SysUserRole> relations = userRoleMapper.selectList(relationWrapper);
+            List<Long> roleIds = relations.stream().map(SysUserRole::getRoleId).distinct().toList();
+            if (!roleIds.isEmpty()) {
+                LambdaQueryWrapper<SysRole> roleWrapper = new LambdaQueryWrapper<>();
+                roleWrapper.in(SysRole::getId, roleIds);
+                Map<Long, SysRole> roleById = roleMapper.selectList(roleWrapper).stream()
+                        .collect(Collectors.toMap(SysRole::getId, role -> role));
+                relations.forEach(relation -> {
+                    SysRole role = roleById.get(relation.getRoleId());
+                    if (role != null) {
+                        roleMap.computeIfAbsent(relation.getUserId(), key -> new ArrayList<>()).add(role);
+                    }
+                });
+            }
+        }
+
+        List<SysUserVO> rows = users.stream().map(user -> {
+            SysUserVO vo = BeanUtil.copyProperties(user, SysUserVO.class);
+            String org = StringUtils.hasText(user.getHospital()) ? user.getHospital() : "";
+            if (StringUtils.hasText(user.getDepartment())) {
+                org = StringUtils.hasText(org) ? org + " / " + user.getDepartment() : user.getDepartment();
             }
             vo.setOrg(org);
-            vo.setRoleKey(StringUtils.hasText(vo.getRoleKey()) ? vo.getRoleKey().split(",")[0] : "");
-            vo.setRoleName(StringUtils.hasText(vo.getRoleName()) ? vo.getRoleName().split(",")[0] : "");
-            vo.setStatusText(vo.getStatus() != null && vo.getStatus() == CommonConstants.STATUS_ENABLED ? "启用" : "停用");
-        });
-        return PageResult.of(rows, total, pageNum, pageSize);
+            List<SysRole> roles = roleMap.getOrDefault(user.getId(), List.of());
+            vo.setRoleKey(roles.isEmpty() ? "" : roles.get(0).getRoleKey());
+            vo.setRoleName(roles.isEmpty() ? "" : roles.get(0).getRoleName());
+            vo.setStatusText(user.getStatus() != null && user.getStatus() == CommonConstants.STATUS_ENABLED ? "启用" : "停用");
+            return vo;
+        }).toList();
+
+        return PageResult.of(rows, userPage.getTotal(), current, size);
     }
 
     @Override
@@ -112,6 +146,11 @@ public class SysUserServiceImpl implements SysUserService {
         userRole.setUserId(user.getId());
         userRole.setRoleId(role.getId());
         userRoleMapper.insert(userRole);
+
+        // 医生账号同步初始化医生档案
+        if ("DOCTOR".equals(role.getRoleKey())) {
+            eventPublisher.publishEvent(new DoctorProfileInitEvent(user.getId(), operatorId));
+        }
 
         log.info("新增账号成功: id={}, username={}, roleKey={}", user.getId(), username, role.getRoleKey());
         return user.getId();

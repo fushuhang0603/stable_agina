@@ -14,4 +14,6 @@ public final class CommonConstants {
     public static final int STATUS_DISABLED = 0;
     /** 树形结构根节点父级 ID */
     public static final long ROOT_PARENT_ID = 0L;
+    /** 分页最大条数，超出按此值截断 */
+    public static final long MAX_PAGE_SIZE = 100L;
 }

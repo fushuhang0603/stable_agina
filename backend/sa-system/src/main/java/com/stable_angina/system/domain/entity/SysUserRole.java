@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 用户与角色关联（联合主键 user_id + role_id，无审计字段）
+ * 用户与角色关联
  */
 @Data
 @TableName("sys_user_role")

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stable_angina.business.mapper.DoctorProfileMapper">
+
+    <select id="selectDoctorPage" resultType="com.stable_angina.system.domain.entity.SysUser">
+        SELECT u.*
+        FROM sys_user u
+        WHERE u.deleted = 0
+          AND EXISTS (SELECT 1
+                      FROM sys_user_role ur
+                               INNER JOIN sys_role r ON r.id = ur.role_id AND r.deleted = 0
+                      WHERE ur.user_id = u.id
+                        AND r.role_key = 'DOCTOR')
+        <if test="query.realName != null and query.realName != ''">
+            AND u.real_name LIKE CONCAT('%', #{query.realName}, '%')
+        </if>
+        <if test="query.phone != null and query.phone != ''">
+            AND u.phone LIKE CONCAT('%', #{query.phone}, '%')
+        </if>
+        <if test="query.licenseNo != null and query.licenseNo != ''">
+            AND EXISTS (SELECT 1
+                        FROM doctor_profile p
+                        WHERE p.user_id = u.id
+                          AND p.deleted = 0
+                          AND p.license_no LIKE CONCAT('%', #{query.licenseNo}, '%'))
+        </if>
+        <if test="query.profileStatus != null and query.profileStatus == 1">
+            AND EXISTS (SELECT 1 FROM doctor_profile p2 WHERE p2.user_id = u.id AND p2.deleted = 0)
+        </if>
+        <if test="query.profileStatus != null and query.profileStatus == 0">
+            AND NOT EXISTS (SELECT 1 FROM doctor_profile p3 WHERE p3.user_id = u.id AND p3.deleted = 0)
+        </if>
+        <if test="query.status != null">
+            AND u.status = #{query.status}
+        </if>
+        ORDER BY u.create_time DESC, u.id DESC
+    </select>
+
+    <select id="selectDoctorDetail" resultType="com.stable_angina.business.domain.vo.DoctorProfileVO">
+        SELECT p.id,
+               u.id AS user_id,
+               u.username,
+               u.real_name,
+               u.phone,
+               u.title,
+               u.hospital,
+               u.department,
+               p.position,
+               p.specialty,
+               p.license_no,
+               p.license_type,
+               p.practice_scope,
+               p.cert_no,
+               p.issuing_authority,
+               p.license_expire_date,
+               p.introduction,
+               p.experience,
+               p.schedule,
+               p.registration_fee,
+               p.max_patients,
+               u.status,
+               p.update_time,
+               CASE WHEN p.id IS NULL THEN 0 ELSE 1 END AS has_profile
+        FROM sys_user u
+                 LEFT JOIN doctor_profile p ON p.user_id = u.id AND p.deleted = 0
+        WHERE u.deleted = 0
+          AND u.id = #{userId}
+    </select>
+
+    <select id="selectStats" resultType="com.stable_angina.business.domain.vo.DoctorProfileStatsVO">
+        SELECT COUNT(*) AS total,
+               COALESCE(SUM(CASE WHEN p.id IS NOT NULL THEN 1 ELSE 0 END), 0) AS profiled,
+               COALESCE(SUM(CASE WHEN p.id IS NULL THEN 1 ELSE 0 END), 0) AS unprofiled,
+               COALESCE(SUM(CASE WHEN p.schedule IS NOT NULL AND p.schedule != '' THEN 1 ELSE 0 END), 0) AS scheduled
+        FROM sys_user u
+                 LEFT JOIN doctor_profile p ON p.user_id = u.id AND p.deleted = 0
+        WHERE u.deleted = 0
+          AND EXISTS (SELECT 1
+                      FROM sys_user_role x
+                               INNER JOIN sys_role r2 ON r2.id = x.role_id AND r2.deleted = 0
+                      WHERE x.user_id = u.id
+                        AND r2.role_key = 'DOCTOR')
+    </select>
+</mapper>

@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 登录日志（并发登录允许，但需留痕）
+ * 登录日志
  */
 @Data
 @TableName("sys_login_log")

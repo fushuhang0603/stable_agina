@@ -304,9 +304,11 @@ export const MENU_TREE = [
     key: 'workbench', title: '随访工作台',
     children: [
       { key: 'menu:dashboard', title: '统计看板' },
-      { key: 'menu:patient', title: '患者管理' },
       { key: 'menu:followup', title: '随访工单' },
-      { key: 'menu:ai-summary', title: 'AI 随访摘要' }
+      { key: 'menu:ai-summary', title: 'AI 随访摘要' },
+      { key: 'menu:config', title: '随访参数' },
+      { key: 'menu:patient', title: '患者管理' },
+      { key: 'menu:doctor', title: '医生管理' }
     ]
   },
   {
@@ -321,10 +323,9 @@ export const MENU_TREE = [
     children: [
       { key: 'menu:user', title: '账号管理' },
       { key: 'menu:role', title: '角色与权限' },
-      { key: 'menu:config', title: '系统参数' },
       { key: 'menu:dict', title: '基础字典' },
       { key: 'menu:log', title: '操作日志' },
-      { key: 'menu:ai-log', title: 'AI 调用日志' }
+      { key: 'menu:ai-log', title: 'AI 配置与调用' }
     ]
   }
 ]
@@ -372,7 +373,7 @@ export const DICTS = reactive([
   }
 ])
 
-/** 系统参数 */
+/** 随访参数 */
 export const CONFIGS = reactive([
   { key: 'bp.sbp.threshold', name: '收缩压告警阈值', value: '140', unit: 'mmHg', group: '血压告警', desc: '收缩压 ≥ 该值时标记为偏高' },
   { key: 'bp.dbp.threshold', name: '舒张压告警阈值', value: '90', unit: 'mmHg', group: '血压告警', desc: '舒张压 ≥ 该值时标记为偏高' },

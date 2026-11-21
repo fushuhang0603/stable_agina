@@ -3,46 +3,30 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.stable_angina.system.mapper.SysUserMapper">
 
-    <!-- 列表筛选条件：关键字 / 角色 / 状态 -->
-    <sql id="userFilter">
-        <where>
-            u.deleted = 0
-            <if test="query.keyword != null and query.keyword != ''">
-                AND (u.username LIKE CONCAT('%', #{query.keyword}, '%')
-                OR u.real_name LIKE CONCAT('%', #{query.keyword}, '%')
-                OR u.phone LIKE CONCAT('%', #{query.keyword}, '%'))
-            </if>
-            <if test="query.roleKey != null and query.roleKey != ''">
-                AND EXISTS (SELECT 1
-                            FROM sys_user_role x
-                                     INNER JOIN sys_role r2 ON r2.id = x.role_id AND r2.deleted = 0
-                            WHERE x.user_id = u.id
-                              AND r2.role_key = #{query.roleKey})
-            </if>
-            <if test="query.status != null">
-                AND u.status = #{query.status}
-            </if>
-        </where>
-    </sql>
-
-    <select id="selectUserPage" resultType="com.stable_angina.system.domain.vo.SysUserVO">
-        SELECT u.id, u.username, u.real_name, u.phone, u.email, u.title,
-               u.hospital, u.department, u.status, u.last_login_time, u.remark,
-               GROUP_CONCAT(DISTINCT r.role_key) AS role_key,
-               GROUP_CONCAT(DISTINCT r.role_name) AS role_name
+    <select id="selectUserPage" resultType="com.stable_angina.system.domain.entity.SysUser">
+        SELECT u.*
         FROM sys_user u
-                 LEFT JOIN sys_user_role ur ON ur.user_id = u.id
-                 LEFT JOIN sys_role r ON r.id = ur.role_id AND r.deleted = 0
-        <include refid="userFilter"/>
-        GROUP BY u.id
+        WHERE u.deleted = 0
+        <if test="query.username != null and query.username != ''">
+            AND u.username LIKE CONCAT('%', #{query.username}, '%')
+        </if>
+        <if test="query.realName != null and query.realName != ''">
+            AND u.real_name LIKE CONCAT('%', #{query.realName}, '%')
+        </if>
+        <if test="query.phone != null and query.phone != ''">
+            AND u.phone LIKE CONCAT('%', #{query.phone}, '%')
+        </if>
+        <if test="query.roleKey != null and query.roleKey != ''">
+            AND EXISTS (SELECT 1
+                        FROM sys_user_role ur
+                                 INNER JOIN sys_role r ON r.id = ur.role_id AND r.deleted = 0
+                        WHERE ur.user_id = u.id
+                          AND r.role_key = #{query.roleKey})
+        </if>
+        <if test="query.status != null">
+            AND u.status = #{query.status}
+        </if>
         ORDER BY u.create_time DESC, u.id DESC
-        LIMIT #{offset}, #{pageSize}
-    </select>
-
-    <select id="countUser" resultType="long">
-        SELECT COUNT(DISTINCT u.id)
-        FROM sys_user u
-        <include refid="userFilter"/>
     </select>
 
     <select id="selectStats" resultType="com.stable_angina.system.domain.vo.SysUserStatsVO">

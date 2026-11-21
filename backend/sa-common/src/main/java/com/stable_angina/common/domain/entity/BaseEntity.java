@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 审计基类：与 sys_* 表的 create_by/create_time/update_by/update_time/deleted 对齐
+ * 审计字段基类
  */
 @Data
 @Schema(description = "审计字段基类")

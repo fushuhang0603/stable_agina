@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 角色与菜单关联（联合主键 role_id + menu_id，无审计字段）
+ * 角色与菜单关联
  */
 @Data
 @TableName("sys_role_menu")

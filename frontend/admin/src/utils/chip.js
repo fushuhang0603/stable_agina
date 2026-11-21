@@ -29,6 +29,9 @@ export const CHIP = {
   处置中: 'chip-blue',
   已回复: 'chip-green',
   待回复: 'chip-amber',
+  // 医生档案
+  已建档: 'chip-green',
+  未建档: 'chip-amber',
   // 调用结果
   成功: 'chip-green',
   失败: 'chip-red',

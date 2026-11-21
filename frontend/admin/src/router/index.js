@@ -22,6 +22,7 @@ const routes = [
       { path: 'medication-order', name: 'medication-order', component: () => import('../views/MedicationOrder.vue') },
       { path: 'adverse-reaction', name: 'adverse-reaction', component: () => import('../views/AdverseReaction.vue') },
       { path: 'user-management', name: 'user-management', component: () => import('../views/UserManagement.vue') },
+      { path: 'doctor-management', name: 'doctor-management', component: () => import('../views/DoctorManagement.vue') },
       { path: 'role-management', name: 'role-management', component: () => import('../views/RoleManagement.vue') },
       { path: 'system-config', name: 'system-config', component: () => import('../views/SystemConfig.vue') },
       { path: 'dict-management', name: 'dict-management', component: () => import('../views/DictManagement.vue') },

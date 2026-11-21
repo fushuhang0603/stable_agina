@@ -10,14 +10,28 @@
     <el-card shadow="never" class="filter-card">
       <div class="filter-bar">
         <el-input
-          v-model.trim="filters.keyword"
-          placeholder="用户名 / 姓名 / 手机号"
+          v-model.trim="filters.username"
+          placeholder="用户名"
           clearable
-          style="width: 230px"
+          style="width: 150px"
           @keyup.enter="search"
         >
           <template #prefix><el-icon><Search /></el-icon></template>
         </el-input>
+        <el-input
+          v-model.trim="filters.realName"
+          placeholder="姓名"
+          clearable
+          style="width: 150px"
+          @keyup.enter="search"
+        />
+        <el-input
+          v-model.trim="filters.phone"
+          placeholder="手机号"
+          clearable
+          style="width: 150px"
+          @keyup.enter="search"
+        />
         <el-select v-model="filters.roleKey" placeholder="角色" clearable style="width: 130px">
           <el-option v-for="o in roleOptions" :key="o.value" :value="o.value" :label="o.label" />
         </el-select>
@@ -77,7 +91,7 @@
           <el-form-item v-if="!isEdit" label="初始密码" required>
             <el-input v-model.trim="form.password" type="password" show-password placeholder="至少 6 位" />
           </el-form-item>
-          <el-form-item label="角色" required>
+          <el-form-item label="身份" required>
             <el-select v-model="form.roleKey" style="width: 100%">
               <el-option v-for="o in roleOptions" :key="o.value" :value="o.value" :label="o.label" />
             </el-select>
@@ -122,7 +136,7 @@ const pageSize = 8
 const loading = ref(false)
 const saving = ref(false)
 
-const filters = reactive({ keyword: '', roleKey: undefined, status: undefined })
+const filters = reactive({ username: '', realName: '', phone: '', roleKey: undefined, status: undefined })
 
 const roleOptions = computed(() => roles.value.map((role) => ({ value: role.roleKey, label: role.roleName })))
 const statusOptions = [
@@ -143,7 +157,9 @@ async function loadPage() {
   try {
     const data = await request.get('/api/system/users', {
       params: {
-        keyword: filters.keyword || undefined,
+        username: filters.username || undefined,
+        realName: filters.realName || undefined,
+        phone: filters.phone || undefined,
         roleKey: filters.roleKey || undefined,
         status: filters.status ?? undefined,
         pageNum: page.value,
@@ -163,7 +179,9 @@ function search() {
 }
 
 function reset() {
-  filters.keyword = ''
+  filters.username = ''
+  filters.realName = ''
+  filters.phone = ''
   filters.roleKey = undefined
   filters.status = undefined
   page.value = 1
@@ -223,7 +241,7 @@ async function submit() {
     return
   }
   if (!form.roleKey) {
-    toast('请选择角色')
+    toast('请选择身份')
     return
   }
   saving.value = true
