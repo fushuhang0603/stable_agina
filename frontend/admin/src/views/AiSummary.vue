@@ -24,10 +24,6 @@
           <el-button type="primary" class="generate-btn" :loading="generating" @click="generate">
             {{ generating ? '正在生成摘要…' : '生成 AI 随访摘要' }}
           </el-button>
-          <div class="section-note" style="margin-top: 12px">
-            <el-icon><InfoFilled /></el-icon>
-            <span>AI 仅生成六段摘要供医生参考，不做诊断结论、不修改医嘱，必须经医生审核后方可用于随访记录。</span>
-          </div>
         </Card>
 
         <Card title="历史摘要">

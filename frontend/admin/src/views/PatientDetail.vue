@@ -92,10 +92,6 @@
             </template>
             <Card title="近 14 天血压趋势">
               <EChart :option="bpOption" :height="240" />
-              <div class="section-note" style="margin-top: 10px">
-                <el-icon><InfoFilled /></el-icon>
-                <span>虚线为告警阈值：收缩压 140 mmHg / 舒张压 90 mmHg</span>
-              </div>
             </Card>
 
             <Card title="血压记录明细">

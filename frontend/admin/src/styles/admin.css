@@ -517,46 +517,6 @@ svg.ico {
   line-height: 1.6;
 }
 
-/* ====================== 说明区（不使用侧边竖线） ====================== */
-.section-note {
-  display: flex;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--brand-soft);
-  border: 1px solid #d6e7ff;
-  color: var(--ink-2);
-  font-size: 12.5px;
-  line-height: 1.7;
-  margin-bottom: 12px;
-}
-.section-note .el-icon {
-  margin-top: 2px;
-  font-size: 14px;
-  color: var(--brand);
-  flex: none;
-}
-.section-note.warn {
-  background: var(--amber-soft);
-  border-color: #ffe4ba;
-  color: #8b4a00;
-}
-.section-note.warn .el-icon {
-  color: var(--amber);
-}
-.section-note.red {
-  background: var(--red-soft);
-  border-color: #ffd2c8;
-  color: #b7262b;
-}
-.section-note.red .el-icon {
-  color: var(--red);
-}
-.section-note b {
-  font-weight: 600;
-  color: var(--ink);
-}
-
 /* ====================== 描述列表（dl.kv） ====================== */
 .kv {
   display: grid;

@@ -1,10 +1,5 @@
 <template>
   <div class="dict-management">
-    <div class="section-note">
-      <el-icon><InfoFilled /></el-icon>
-      <span>字典项被业务数据引用时不可删除，只能停用；停用后历史数据仍按原值展示，新建数据不再可选。</span>
-    </div>
-
     <div class="dict-grid">
       <Card title="字典类型" class="dict-left">
         <template #extra>

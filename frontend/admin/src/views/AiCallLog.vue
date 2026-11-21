@@ -85,11 +85,6 @@
       </el-table>
     </Card>
 
-    <div class="section-note log-note">
-      <el-icon><Lock /></el-icon>
-      <span>AI 调用日志仅记录元数据（traceId、模型、tokens、耗时等），不保存患者完整对话原文，符合最小必要原则。</span>
-    </div>
-
     <el-dialog v-model="currentVisible" title="AI 调用详情" width="540px">
       <dl v-if="current" class="kv">
         <dt>traceId</dt>
@@ -113,18 +108,6 @@
         <dt>人工修改</dt>
         <dd><Chip :text="current.edited ? '已修改' : '未修改'" /></dd>
       </dl>
-
-      <div v-if="current && current.result === '失败'" class="section-note warn modal-note">
-        <el-icon><WarningFilled /></el-icon>
-        <span>
-          该次调用失败，tokens 为 0、耗时 {{ current.duration }}，疑似请求超时。建议检查 Base URL、网络连通性与模型服务状态后重试。
-        </span>
-      </div>
-
-      <div class="section-note modal-note">
-        <el-icon><InfoFilled /></el-icon>
-        <span>traceId 用于关联后端 ai_call_log 表与 Langfuse / 日志平台，排查问题时请一并提供。</span>
-      </div>
 
       <template #footer>
         <el-button @click="current = null">关闭</el-button>
@@ -198,13 +181,6 @@ function reset() {
 <style scoped>
 .log-stats {
   margin-bottom: 12px;
-}
-.log-note {
-  margin-top: 12px;
-  margin-bottom: 0;
-}
-.modal-note {
-  margin: 14px 0 0;
 }
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

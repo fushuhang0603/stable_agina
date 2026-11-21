@@ -1,10 +1,5 @@
 <template>
   <div class="role-management">
-    <div class="section-note">
-      <el-icon><InfoFilled /></el-icon>
-      <span>权限变更后需用户重新登录生效。</span>
-    </div>
-
     <div class="role-layout">
       <Card title="角色列表">
         <div v-loading="loadingRoles" class="role-list">

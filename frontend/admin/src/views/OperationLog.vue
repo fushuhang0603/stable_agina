@@ -98,10 +98,6 @@
         <dt>耗时时长</dt>
         <dd>{{ detail.cost }}</dd>
       </dl>
-      <div class="section-note warn log-note">
-        <el-icon><Lock /></el-icon>
-        <span>日志不可修改，保留 180 天。</span>
-      </div>
       <template #footer>
         <el-button @click="detail = null">关闭</el-button>
       </template>
@@ -165,9 +161,6 @@ function reset() {
 <style scoped>
 .log-stats {
   margin-bottom: 12px;
-}
-.log-note {
-  margin: 16px 0 0;
 }
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

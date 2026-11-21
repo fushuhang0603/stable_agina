@@ -60,13 +60,6 @@
       </div>
     </Card>
 
-    <div class="section-note warn">
-      <el-icon><WarningFilled /></el-icon>
-      <span>
-        <b>严重不良反应提醒：</b>出现过敏性休克、黑便、意识障碍等情况时，需立即电话联系患者并上报医务处，不得仅在系统内回复。
-      </span>
-    </div>
-
     <el-dialog v-model="showModal" title="不良反应处置" width="580px">
       <dl class="kv ar-kv">
         <dt>患者</dt>

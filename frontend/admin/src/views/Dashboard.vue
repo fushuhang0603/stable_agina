@@ -79,10 +79,6 @@
           </span>
           <span class="val">{{ row.value }} 次</span>
         </div>
-        <div class="section-note" style="margin-top: 10px">
-          <el-icon><InfoFilled /></el-icon>
-          <span>统计口径：近 30 天晨起血压 ≥ 140/90 mmHg 的记录次数</span>
-        </div>
       </Card>
     </div>
   </div>

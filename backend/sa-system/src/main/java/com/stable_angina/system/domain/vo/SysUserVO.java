@@ -1,5 +1,6 @@
 package com.stable_angina.system.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -53,6 +54,7 @@ public class SysUserVO implements Serializable {
     private String statusText;
 
     @Schema(description = "最后登录时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime lastLoginTime;
 
     @Schema(description = "备注")

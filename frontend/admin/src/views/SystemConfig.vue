@@ -1,10 +1,5 @@
 <template>
   <div class="system-config">
-    <div class="section-note">
-      <el-icon><InfoFilled /></el-icon>
-      <span>参数修改会写入操作日志；「AI 配置」中的 Base URL、模型与 temperature 仅在 <b>ai.mock=false</b> 时生效。</span>
-    </div>
-
     <Card v-for="group in groups" :key="group.name" :title="group.name">
       <template #extra>
         <span class="card-hint">{{ group.rows.length }} 项参数</span>
