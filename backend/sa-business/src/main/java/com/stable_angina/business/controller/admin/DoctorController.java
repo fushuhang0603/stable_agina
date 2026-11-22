@@ -2,6 +2,7 @@ package com.stable_angina.business.controller.admin;
 
 import com.stable_angina.business.domain.dto.DoctorProfileQueryDTO;
 import com.stable_angina.business.domain.dto.DoctorProfileUpdateDTO;
+import com.stable_angina.business.domain.vo.DoctorOptionVO;
 import com.stable_angina.business.domain.vo.DoctorProfileStatsVO;
 import com.stable_angina.business.domain.vo.DoctorProfileVO;
 import com.stable_angina.business.service.DoctorService;
@@ -38,6 +39,12 @@ public class DoctorController {
     @GetMapping("/stats")
     public Result<DoctorProfileStatsVO> stats() {
         return Result.success(doctorService.stats());
+    }
+
+    @Operation(summary = "医生下拉选项")
+    @GetMapping("/options")
+    public Result<java.util.List<DoctorOptionVO>> options() {
+        return Result.success(doctorService.options());
     }
 
     @Operation(summary = "医生档案明细（按档案主键）")

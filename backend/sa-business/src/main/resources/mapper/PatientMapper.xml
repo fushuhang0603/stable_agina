@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stable_angina.business.mapper.PatientMapper">
+
+    <select id="selectPatientPage" resultType="com.stable_angina.business.domain.vo.PatientVO">
+        SELECT p.id,
+               p.patient_no,
+               p.name,
+               p.gender,
+               p.birth_date,
+               TIMESTAMPDIFF(YEAR, p.birth_date, CURDATE()) AS age,
+               p.phone,
+               p.diagnose_date,
+               p.allergy,
+               p.comorbidity,
+               p.risk_level,
+               p.status,
+               p.doctor_id,
+               d.real_name AS doctor_name,
+               p.last_visit_date,
+               p.next_visit_date,
+               p.remark,
+               p.update_time
+        FROM patient p
+                 LEFT JOIN sys_user d ON d.id = p.doctor_id AND d.deleted = 0
+        WHERE p.deleted = 0
+        <if test="query.name != null and query.name != ''">
+            AND p.name LIKE CONCAT('%', #{query.name}, '%')
+        </if>
+        <if test="query.patientNo != null and query.patientNo != ''">
+            AND p.patient_no LIKE CONCAT('%', #{query.patientNo}, '%')
+        </if>
+        <if test="query.phone != null and query.phone != ''">
+            AND p.phone LIKE CONCAT('%', #{query.phone}, '%')
+        </if>
+        <if test="query.riskLevel != null and query.riskLevel != ''">
+            AND p.risk_level = #{query.riskLevel}
+        </if>
+        <if test="query.status != null and query.status != ''">
+            AND p.status = #{query.status}
+        </if>
+        <if test="query.doctorId != null">
+            AND p.doctor_id = #{query.doctorId}
+        </if>
+        ORDER BY FIELD(p.risk_level, 'HIGH', 'MID', 'LOW'), p.next_visit_date ASC, p.id DESC
+    </select>
+
+    <select id="selectPatientDetail" resultType="com.stable_angina.business.domain.vo.PatientVO">
+        SELECT p.id,
+               p.patient_no,
+               p.name,
+               p.gender,
+               p.birth_date,
+               TIMESTAMPDIFF(YEAR, p.birth_date, CURDATE()) AS age,
+               p.phone,
+               p.diagnose_date,
+               p.allergy,
+               p.comorbidity,
+               p.risk_level,
+               p.status,
+               p.doctor_id,
+               d.real_name AS doctor_name,
+               p.last_visit_date,
+               p.next_visit_date,
+               p.remark,
+               p.update_time
+        FROM patient p
+                 LEFT JOIN sys_user d ON d.id = p.doctor_id AND d.deleted = 0
+        WHERE p.deleted = 0
+          AND p.id = #{id}
+    </select>
+
+    <select id="selectBaseline" resultType="com.stable_angina.business.domain.vo.PatientBaselineVO">
+        SELECT b.id,
+               b.patient_id,
+               b.first_attack,
+               b.exam_result,
+               b.risk_basis,
+               b.register_doctor_id,
+               u.real_name AS register_doctor_name,
+               b.register_date
+        FROM patient_baseline b
+                 LEFT JOIN sys_user u ON u.id = b.register_doctor_id AND u.deleted = 0
+        WHERE b.deleted = 0
+          AND b.patient_id = #{patientId}
+    </select>
+
+    <select id="selectChangeLogs" resultType="com.stable_angina.business.domain.vo.PatientChangeLogVO">
+        SELECT id,
+               field_name,
+               before_value,
+               after_value,
+               operator_name,
+               change_time
+        FROM patient_change_log
+        WHERE patient_id = #{patientId}
+        ORDER BY change_time DESC, id DESC
+        LIMIT 50
+    </select>
+
+    <select id="selectStats" resultType="com.stable_angina.business.domain.vo.PatientStatsVO">
+        SELECT COUNT(*) AS total,
+               COALESCE(SUM(CASE WHEN p.risk_level = 'HIGH' THEN 1 ELSE 0 END), 0) AS high_risk,
+               COALESCE(SUM(CASE WHEN p.status = 'FOLLOWING' THEN 1 ELSE 0 END), 0) AS following,
+               COALESCE(SUM(CASE WHEN p.status = 'OVERDUE' THEN 1 ELSE 0 END), 0) AS overdue
+        FROM patient p
+        WHERE p.deleted = 0
+        <if test="doctorId != null">
+            AND p.doctor_id = #{doctorId}
+        </if>
+    </select>
+</mapper>

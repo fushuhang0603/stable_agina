@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stable_angina.business.domain.dto.DoctorProfileQueryDTO;
 import com.stable_angina.business.domain.entity.DoctorProfile;
+import com.stable_angina.business.domain.vo.DoctorOptionVO;
 import com.stable_angina.business.domain.vo.DoctorProfileStatsVO;
 import com.stable_angina.business.domain.vo.DoctorProfileVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 医生档案
@@ -28,4 +31,9 @@ public interface DoctorProfileMapper extends BaseMapper<DoctorProfile> {
     DoctorProfileVO selectDoctorDetailById(@Param("id") Long id);
 
     DoctorProfileStatsVO selectStats();
+
+    /**
+     * 医生下拉选项：具备 DOCTOR 角色且账号启用
+     */
+    List<DoctorOptionVO> selectDoctorOptions();
 }

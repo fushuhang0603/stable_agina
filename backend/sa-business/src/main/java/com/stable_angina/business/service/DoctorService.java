@@ -2,9 +2,12 @@ package com.stable_angina.business.service;
 
 import com.stable_angina.business.domain.dto.DoctorProfileQueryDTO;
 import com.stable_angina.business.domain.dto.DoctorProfileUpdateDTO;
+import com.stable_angina.business.domain.vo.DoctorOptionVO;
 import com.stable_angina.business.domain.vo.DoctorProfileStatsVO;
 import com.stable_angina.business.domain.vo.DoctorProfileVO;
 import com.stable_angina.common.api.PageResult;
+
+import java.util.List;
 
 /**
  * 医生档案
@@ -23,4 +26,9 @@ public interface DoctorService {
     DoctorProfileVO detailById(Long id);
 
     void update(Long userId, DoctorProfileUpdateDTO dto);
+
+    /**
+     * 医生下拉选项
+     */
+    List<DoctorOptionVO> options();
 }

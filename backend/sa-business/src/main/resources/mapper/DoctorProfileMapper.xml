@@ -127,4 +127,20 @@
                       WHERE x.user_id = u.id
                         AND r2.role_key = 'DOCTOR')
     </select>
+
+    <select id="selectDoctorOptions" resultType="com.stable_angina.business.domain.vo.DoctorOptionVO">
+        SELECT u.id,
+               u.real_name AS name,
+               u.title,
+               u.department
+        FROM sys_user u
+        WHERE u.deleted = 0
+          AND u.status = 1
+          AND EXISTS (SELECT 1
+                      FROM sys_user_role x
+                               INNER JOIN sys_role r ON r.id = x.role_id AND r.deleted = 0
+                      WHERE x.user_id = u.id
+                        AND r.role_key = 'DOCTOR')
+        ORDER BY u.id
+    </select>
 </mapper>

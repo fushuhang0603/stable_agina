@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stable_angina.business.domain.dto.DoctorProfileQueryDTO;
 import com.stable_angina.business.domain.dto.DoctorProfileUpdateDTO;
 import com.stable_angina.business.domain.entity.DoctorProfile;
+import com.stable_angina.business.domain.vo.DoctorOptionVO;
 import com.stable_angina.business.domain.vo.DoctorProfileStatsVO;
 import com.stable_angina.business.domain.vo.DoctorProfileVO;
 import com.stable_angina.business.mapper.DoctorProfileMapper;
@@ -126,5 +127,10 @@ public class DoctorServiceImpl implements DoctorService {
             doctorProfileMapper.updateById(profile);
         }
         log.info("保存医生档案成功: userId={}", userId);
+    }
+
+    @Override
+    public List<DoctorOptionVO> options() {
+        return doctorProfileMapper.selectDoctorOptions();
     }
 }
