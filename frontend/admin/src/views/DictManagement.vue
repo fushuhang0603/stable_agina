@@ -3,25 +3,25 @@
     <div class="dict-grid">
       <Card title="字典类型" class="dict-left">
         <template #extra>
-          <span class="card-hint">共 {{ DICTS.length }} 类</span>
+          <span class="card-hint">共 {{ types.length }} 类</span>
         </template>
         <div class="tree dict-list">
           <div
-            v-for="dict in DICTS"
-            :key="dict.code"
+            v-for="dict in types"
+            :key="dict.dictType"
             class="tree-row dict-row"
-            :class="{ active: currentDict && dict.code === currentDict.code }"
-            @click="activeCode = dict.code"
+            :class="{ active: currentType && dict.dictType === currentType.dictType }"
+            @click="selectType(dict.dictType)"
           >
             <el-icon><Notebook /></el-icon>
             <div class="dict-meta">
               <div class="dict-name">
-                <b>{{ dict.name }}</b>
-                <span class="dict-code">{{ dict.code }}</span>
+                <b>{{ dict.dictName }}</b>
+                <span class="dict-code">{{ dict.dictType }}</span>
               </div>
-              <div class="dict-remark">{{ dict.remark }}</div>
+              <div class="dict-remark">{{ dict.remark || '—' }}</div>
             </div>
-            <span class="cnt">{{ dict.items.length }}</span>
+            <span class="cnt">{{ dict.itemCount }}</span>
           </div>
         </div>
         <div class="dict-left-f">
@@ -29,29 +29,29 @@
         </div>
       </Card>
 
-      <Card :title="currentDict ? `${currentDict.name} · 字典项` : '字典项'">
+      <Card :title="currentType ? `${currentType.dictName} · 字典项` : '字典项'">
         <template #extra>
           <div class="dict-tools">
-            <span v-if="currentDict" class="card-hint dict-code">{{ currentDict.code }}</span>
-            <el-button type="primary" size="small" :disabled="!currentDict" @click="openItemModal(null)">
+            <span v-if="currentType" class="card-hint dict-code">{{ currentType.dictType }}</span>
+            <el-button type="primary" size="small" :disabled="!currentType" @click="openItemModal(null)">
               新增字典项
             </el-button>
           </div>
         </template>
 
-        <el-table v-if="currentDict" :data="currentDict.items" size="small">
-          <el-table-column prop="label" label="标签" min-width="140" />
+        <el-table v-if="currentType" v-loading="itemsLoading" :data="items" size="small">
+          <el-table-column prop="dictLabel" label="标签" min-width="140" />
           <el-table-column label="值" min-width="140">
-            <template #default="{ row }"><span class="mono">{{ row.value }}</span></template>
+            <template #default="{ row }"><span class="mono">{{ row.dictValue }}</span></template>
           </el-table-column>
           <el-table-column prop="sort" label="排序" width="80" />
           <el-table-column label="状态" width="90">
-            <template #default="{ row }"><Chip :text="row.status" /></template>
+            <template #default="{ row }"><Chip :text="row.statusText" /></template>
           </el-table-column>
           <el-table-column label="操作" width="130" align="right">
-            <template #default="{ row, $index }">
+            <template #default="{ row }">
               <el-button link type="primary" @click="openItemModal(row)">编辑</el-button>
-              <el-button link type="danger" @click="removeItem($index)">删除</el-button>
+              <el-button link type="danger" @click="removeItem(row)">删除</el-button>
             </template>
           </el-table-column>
           <template #empty>该字典暂无字典项，请点击右上角「新增字典项」</template>
@@ -64,16 +64,16 @@
       <el-form label-position="top">
         <el-form-item label="所属字典">
           <div class="dict-context">
-            <b>{{ currentDict.name }}</b>
-            <span class="dict-code">{{ currentDict.code }}</span>
+            <b>{{ currentType?.dictName }}</b>
+            <span class="dict-code">{{ currentType?.dictType }}</span>
           </div>
         </el-form-item>
         <div class="form-2">
           <el-form-item label="标签" required>
-            <el-input v-model.trim="itemForm.label" placeholder="如：劳累" />
+            <el-input v-model.trim="itemForm.dictLabel" placeholder="如：劳累" />
           </el-form-item>
           <el-form-item label="值" required>
-            <el-input v-model.trim="itemForm.value" placeholder="如：exertion" />
+            <el-input v-model.trim="itemForm.dictValue" placeholder="如：exertion" />
           </el-form-item>
           <el-form-item label="排序">
             <el-input v-model.trim="itemForm.sort" placeholder="数字，越小越靠前" />
@@ -95,10 +95,10 @@
     <el-dialog v-model="typeModal" title="新增字典类型" width="480px">
       <el-form label-position="top">
         <el-form-item label="字典编码" required>
-          <el-input v-model.trim="typeForm.code" placeholder="如：followup_type" />
+          <el-input v-model.trim="typeForm.dictType" placeholder="如：followup_type" />
         </el-form-item>
         <el-form-item label="字典名称" required>
-          <el-input v-model.trim="typeForm.name" placeholder="如：随访类型" />
+          <el-input v-model.trim="typeForm.dictName" placeholder="如：随访类型" />
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model.trim="typeForm.remark" type="textarea" :rows="3" resize="none" placeholder="说明该字典的使用场景" />
@@ -113,85 +113,143 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import Card from '../components/Card.vue'
 import Chip from '../components/Chip.vue'
-import { DICTS } from '../mock'
+import request from '../utils/request'
 import { toast } from '../utils/toast'
 
-const activeCode = ref(DICTS[0]?.code)
-const currentDict = computed(() => DICTS.find((dict) => dict.code === activeCode.value) || DICTS[0] || null)
+const types = ref([])
+const items = ref([])
+const activeCode = ref('')
+const itemsLoading = ref(false)
+
+const currentType = computed(
+  () => types.value.find((dict) => dict.dictType === activeCode.value) || null
+)
 
 const itemModal = ref(false)
 const editingItem = ref(null)
-const itemForm = reactive({ label: '', value: '', sort: '1', status: '启用' })
+const itemForm = reactive({ dictLabel: '', dictValue: '', sort: '1', status: '启用' })
 
 const typeModal = ref(false)
-const typeForm = reactive({ code: '', name: '', remark: '' })
+const typeForm = reactive({ dictType: '', dictName: '', remark: '' })
+
+async function loadTypes() {
+  try {
+    types.value = (await request.get('/api/system/dicts')) || []
+  } catch (e) {
+    toast.error(e.message || '字典类型加载失败')
+  }
+}
+
+async function loadItems() {
+  if (!activeCode.value) {
+    items.value = []
+    return
+  }
+  itemsLoading.value = true
+  try {
+    items.value = (await request.get(`/api/system/dicts/${activeCode.value}/items`)) || []
+  } catch (e) {
+    items.value = []
+    toast.error(e.message || '字典项加载失败')
+  } finally {
+    itemsLoading.value = false
+  }
+}
+
+function selectType(code) {
+  if (code === activeCode.value) return
+  activeCode.value = code
+  loadItems()
+}
+
+onMounted(async () => {
+  await loadTypes()
+  if (types.value.length) {
+    activeCode.value = types.value[0].dictType
+    await loadItems()
+  }
+})
 
 function openItemModal(item) {
   editingItem.value = item
-  itemForm.label = item ? item.label : ''
-  itemForm.value = item ? item.value : ''
-  itemForm.sort = item ? String(item.sort) : String((currentDict.value?.items.length || 0) + 1)
-  itemForm.status = item ? item.status : '启用'
+  itemForm.dictLabel = item ? item.dictLabel : ''
+  itemForm.dictValue = item ? item.dictValue : ''
+  itemForm.sort = item ? String(item.sort) : String(items.value.length + 1)
+  itemForm.status = item ? item.statusText : '启用'
   itemModal.value = true
 }
 
-function submitItem() {
-  if (!currentDict.value) return
-  if (!itemForm.label || !itemForm.value) {
+async function submitItem() {
+  if (!currentType.value) return
+  if (!itemForm.dictLabel || !itemForm.dictValue) {
     toast('请填写字典标签与值')
     return
   }
   const payload = {
-    label: itemForm.label,
-    value: itemForm.value,
+    dictLabel: itemForm.dictLabel,
+    dictValue: itemForm.dictValue,
     sort: Number(itemForm.sort) || 0,
-    status: itemForm.status
+    status: itemForm.status === '启用' ? 1 : 0
   }
   const isEdit = !!editingItem.value
-  if (isEdit) {
-    Object.assign(editingItem.value, payload)
-  } else {
-    currentDict.value.items.push(payload)
+  try {
+    if (isEdit) {
+      await request.put(`/api/system/dicts/items/${editingItem.value.id}`, payload)
+    } else {
+      await request.post('/api/system/dicts/items', {
+        ...payload,
+        dictType: currentType.value.dictType
+      })
+    }
+    itemModal.value = false
+    editingItem.value = null
+    await Promise.all([loadItems(), loadTypes()])
+    toast(isEdit ? '字典项已更新' : '字典项已新增')
+  } catch (e) {
+    toast.error(e.message || '保存失败')
   }
-  itemModal.value = false
-  editingItem.value = null
-  toast(isEdit ? '字典项已更新（演示）' : '字典项已新增（演示）')
 }
 
-function removeItem(index) {
-  if (!currentDict.value) return
-  currentDict.value.items.splice(index, 1)
-  toast('字典项已删除（演示）')
+async function removeItem(row) {
+  try {
+    await request.delete(`/api/system/dicts/items/${row.id}`)
+    await Promise.all([loadItems(), loadTypes()])
+    toast('字典项已删除')
+  } catch (e) {
+    toast.error(e.message || '删除失败')
+  }
 }
 
 function openTypeModal() {
-  typeForm.code = ''
-  typeForm.name = ''
+  typeForm.dictType = ''
+  typeForm.dictName = ''
   typeForm.remark = ''
   typeModal.value = true
 }
 
-function submitType() {
-  if (!typeForm.code || !typeForm.name) {
+async function submitType() {
+  if (!typeForm.dictType || !typeForm.dictName) {
     toast('请填写字典编码与名称')
     return
   }
-  if (DICTS.some((dict) => dict.code === typeForm.code)) {
-    toast('字典编码已存在，请更换')
-    return
+  try {
+    await request.post('/api/system/dicts', {
+      dictType: typeForm.dictType,
+      dictName: typeForm.dictName,
+      status: 1,
+      remark: typeForm.remark || null
+    })
+    typeModal.value = false
+    await loadTypes()
+    activeCode.value = typeForm.dictType
+    await loadItems()
+    toast('字典类型已新增')
+  } catch (e) {
+    toast.error(e.message || '创建失败')
   }
-  DICTS.unshift({
-    code: typeForm.code,
-    name: typeForm.name,
-    remark: typeForm.remark || '—',
-    items: []
-  })
-  activeCode.value = typeForm.code
-  typeModal.value = false
-  toast('字典类型已新增（演示）')
 }
 </script>
 
