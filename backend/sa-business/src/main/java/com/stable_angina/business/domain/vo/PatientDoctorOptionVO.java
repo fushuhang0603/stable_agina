@@ -24,6 +24,9 @@ public class PatientDoctorOptionVO implements Serializable {
     @Schema(description = "职称")
     private String title;
 
+    @Schema(description = "行政职务")
+    private String position;
+
     @Schema(description = "所属医院")
     private String hospital;
 

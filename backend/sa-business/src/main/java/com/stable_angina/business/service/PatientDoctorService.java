@@ -2,6 +2,7 @@ package com.stable_angina.business.service;
 
 import com.stable_angina.business.domain.dto.DoctorApplySubmitDTO;
 import com.stable_angina.business.domain.vo.PatientDoctorApplyVO;
+import com.stable_angina.business.domain.vo.PatientDoctorDetailVO;
 import com.stable_angina.business.domain.vo.PatientDoctorOptionVO;
 
 import java.util.List;
@@ -20,6 +21,11 @@ public interface PatientDoctorService {
      * 当前绑定医生，未绑定返回 null
      */
     PatientDoctorOptionVO currentDoctor();
+
+    /**
+     * 医生档案详情，并标记当前绑定与待审核状态
+     */
+    PatientDoctorDetailVO doctorDetail(Long doctorId);
 
     /**
      * 提交绑定申请

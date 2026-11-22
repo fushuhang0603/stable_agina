@@ -59,6 +59,12 @@
       "style": {
         "navigationBarTitleText": "我的医生"
       }
+    },
+    {
+      "path": "pages/doctor-detail/doctor-detail",
+      "style": {
+        "navigationBarTitleText": "医生档案"
+      }
     }
   ],
   "globalStyle": {

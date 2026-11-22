@@ -10,16 +10,18 @@
           <text class="b">当前随访医生</text>
           <text class="chip chip-green ml-auto">已绑定</text>
         </view>
-        <view class="h5-card">
+        <view class="h5-card tap" @click="openDetail(boundDoctor)">
           <view class="fa-row" style="gap: 12px">
             <view class="doc-avatar">{{ (boundDoctor.name || '医').slice(-1) }}</view>
             <view class="fa-grow">
               <view class="fa-row" style="gap: 6px">
                 <text class="doc-name">{{ boundDoctor.name || '—' }}</text>
                 <text class="chip chip-blue">{{ boundDoctor.title || '医师' }}</text>
+                <text v-if="boundDoctor.position" class="chip chip-violet">{{ boundDoctor.position }}</text>
               </view>
               <text class="doc-meta">{{ doctorDept(boundDoctor) }}</text>
             </view>
+            <g-icon name="arrowRight" :size="24" class="doc-arrow" />
           </view>
           <view v-if="boundDoctor.specialty" class="doc-block">
             <text class="doc-block-t">擅长领域</text>
@@ -69,27 +71,26 @@
           <text class="b">{{ boundDoctor ? '申请换绑医生' : '选择随访医生' }}</text>
           <text class="ml-auto t-12 ink-3">{{ doctors.length }} 位可申请</text>
         </view>
-        <view v-for="d in doctors" :key="d.id" class="h5-card">
+        <view v-for="d in doctors" :key="d.id" class="h5-card tap" @click="openDetail(d)">
           <view class="fa-row" style="gap: 12px">
             <view class="doc-avatar">{{ (d.name || '医').slice(-1) }}</view>
             <view class="fa-grow">
               <view class="fa-row" style="gap: 6px">
                 <text class="doc-name">{{ d.name || '—' }}</text>
                 <text class="chip chip-blue">{{ d.title || '医师' }}</text>
+                <text v-if="d.position" class="chip chip-violet">{{ d.position }}</text>
               </view>
               <text class="doc-meta">{{ doctorDept(d) }}</text>
             </view>
+            <g-icon name="arrowRight" :size="24" class="doc-arrow" />
           </view>
-          <view v-if="d.specialty" class="doc-block">
-            <text class="doc-block-t">擅长领域</text>
-            <text class="doc-block-c">{{ d.specialty }}</text>
-          </view>
+          <text v-if="d.introduction || d.specialty" class="doc-intro">{{ d.introduction || d.specialty }}</text>
           <view class="doc-foot">
             <text class="t-12 ink-3">在管患者 {{ countText(d) }}</text>
             <view
               class="h5-btn sm doc-btn"
               :class="btnClass(d)"
-              @click="openApply(d)"
+              @click.stop="openApply(d)"
             >
               {{ btnText(d) }}
             </view>
@@ -185,6 +186,11 @@ onShow(() => {
   loadAll()
 })
 
+function openDetail(doctor) {
+  if (!doctor || !doctor.id) return
+  uni.navigateTo({ url: `/pages/doctor-detail/doctor-detail?id=${doctor.id}` })
+}
+
 function openApply(doctor) {
   if (doctor.bound || doctor.pending) return
   if (pendingApply.value) {
@@ -256,6 +262,20 @@ async function cancelApply() {
   margin-top: 3px;
   font-size: 12px;
   color: var(--ink-3);
+}
+.doc-arrow {
+  color: var(--ink-3);
+  flex: none;
+}
+.doc-intro {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 10px;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ink-2);
 }
 .doc-block {
   display: flex;

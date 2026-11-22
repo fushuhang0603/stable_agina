@@ -2,6 +2,7 @@ package com.stable_angina.business.controller.patient;
 
 import com.stable_angina.business.domain.dto.DoctorApplySubmitDTO;
 import com.stable_angina.business.domain.vo.PatientDoctorApplyVO;
+import com.stable_angina.business.domain.vo.PatientDoctorDetailVO;
 import com.stable_angina.business.domain.vo.PatientDoctorOptionVO;
 import com.stable_angina.business.service.PatientDoctorService;
 import com.stable_angina.common.api.Result;
@@ -39,6 +40,12 @@ public class PatientDoctorController {
     @GetMapping("/doctor/current")
     public Result<PatientDoctorOptionVO> currentDoctor() {
         return Result.success(patientDoctorService.currentDoctor());
+    }
+
+    @Operation(summary = "医生档案详情")
+    @GetMapping("/doctors/{id}")
+    public Result<PatientDoctorDetailVO> doctorDetail(@PathVariable Long id) {
+        return Result.success(patientDoctorService.doctorDetail(id));
     }
 
     @Operation(summary = "当前待审核绑定申请")

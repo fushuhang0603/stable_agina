@@ -1,5 +1,6 @@
 package com.stable_angina.business.mapper;
 
+import com.stable_angina.business.domain.vo.PatientDoctorDetailVO;
 import com.stable_angina.business.domain.vo.PatientDoctorOptionVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,4 +22,9 @@ public interface PatientDoctorMapper {
      * 单个可绑定医生，非医生角色或已停用返回 null
      */
     PatientDoctorOptionVO selectDoctorById(@Param("doctorId") Long doctorId);
+
+    /**
+     * 单个医生档案详情，非医生角色或已停用返回 null
+     */
+    PatientDoctorDetailVO selectDoctorDetail(@Param("doctorId") Long doctorId);
 }

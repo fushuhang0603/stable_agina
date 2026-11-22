@@ -7,6 +7,7 @@
         u.id,
         u.real_name AS name,
         u.title,
+        pr.position,
         u.hospital,
         u.department,
         pr.specialty,
@@ -33,6 +34,35 @@
     <select id="selectDoctorById" resultType="com.stable_angina.business.domain.vo.PatientDoctorOptionVO">
         SELECT
         <include refid="doctorColumns"/>
+        FROM sys_user u
+        LEFT JOIN doctor_profile pr ON pr.user_id = u.id AND pr.deleted = 0
+        WHERE u.deleted = 0
+          AND u.status = 1
+          AND u.id = #{doctorId}
+          AND EXISTS (SELECT 1
+                      FROM sys_user_role x
+                               INNER JOIN sys_role r ON r.id = x.role_id AND r.deleted = 0
+                      WHERE x.user_id = u.id
+                        AND r.role_key = 'DOCTOR')
+    </select>
+
+    <select id="selectDoctorDetail" resultType="com.stable_angina.business.domain.vo.PatientDoctorDetailVO">
+        SELECT
+        u.id,
+        u.real_name AS name,
+        u.title,
+        pr.position,
+        u.hospital,
+        u.department,
+        pr.license_type,
+        pr.practice_scope,
+        pr.specialty,
+        pr.introduction,
+        pr.experience,
+        pr.schedule,
+        pr.registration_fee,
+        pr.max_patients,
+        (SELECT COUNT(*) FROM patient pt WHERE pt.doctor_id = u.id AND pt.deleted = 0) AS patient_count
         FROM sys_user u
         LEFT JOIN doctor_profile pr ON pr.user_id = u.id AND pr.deleted = 0
         WHERE u.deleted = 0

@@ -6,6 +6,7 @@ import com.stable_angina.business.domain.dto.DoctorApplySubmitDTO;
 import com.stable_angina.business.domain.entity.Patient;
 import com.stable_angina.business.domain.entity.PatientDoctorApply;
 import com.stable_angina.business.domain.vo.PatientDoctorApplyVO;
+import com.stable_angina.business.domain.vo.PatientDoctorDetailVO;
 import com.stable_angina.business.domain.vo.PatientDoctorOptionVO;
 import com.stable_angina.business.mapper.PatientDoctorApplyMapper;
 import com.stable_angina.business.mapper.PatientDoctorMapper;
@@ -62,6 +63,23 @@ public class PatientDoctorServiceImpl implements PatientDoctorService {
             return null;
         }
         return patientDoctorMapper.selectDoctorById(patient.getDoctorId());
+    }
+
+    @Override
+    public PatientDoctorDetailVO doctorDetail(Long doctorId) {
+        PatientDoctorDetailVO detail = patientDoctorMapper.selectDoctorDetail(doctorId);
+        if (detail == null) {
+            throw new BusinessException(ErrorCodes.BAD_REQUEST, "医生不存在或已停用");
+        }
+        Patient patient = currentPatient();
+        detail.setBound(Objects.equals(detail.getId(), patient.getDoctorId()));
+
+        LambdaQueryWrapper<PatientDoctorApply> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(PatientDoctorApply::getPatientId, patient.getId());
+        wrapper.eq(PatientDoctorApply::getDoctorId, doctorId);
+        wrapper.eq(PatientDoctorApply::getStatus, PatientConstants.APPLY_STATUS_PENDING);
+        detail.setPending(applyMapper.selectCount(wrapper) > 0);
+        return detail;
     }
 
     @Override
