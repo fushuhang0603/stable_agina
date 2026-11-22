@@ -58,7 +58,7 @@
         class="clickable-table"
         @row-click="(row) => goDetail(row.id)"
       >
-        <el-table-column label="患者" min-width="180">
+        <el-table-column label="患者" width="168">
           <template #default="{ row }">
             <div class="patient-cell">
               <span class="avatar">{{ (row.name || '?').charAt(0) }}</span>
@@ -69,34 +69,37 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="性别 / 年龄" width="104">
-          <template #default="{ row }">{{ row.genderText || '—' }} / {{ row.age != null ? row.age + ' 岁' : '—' }}</template>
+        <el-table-column label="性别" width="64" align="center">
+          <template #default="{ row }">{{ dash(row.genderText) }}</template>
         </el-table-column>
-        <el-table-column label="确诊日期" width="110">
+        <el-table-column label="年龄" width="76" align="center">
+          <template #default="{ row }">{{ row.age != null ? row.age + ' 岁' : '—' }}</template>
+        </el-table-column>
+        <el-table-column label="确诊日期" min-width="112" align="center">
           <template #default="{ row }">{{ dash(row.diagnoseDate) }}</template>
         </el-table-column>
-        <el-table-column label="危险分层" width="96">
+        <el-table-column label="危险分层" width="96" align="center">
           <template #default="{ row }"><Chip :text="row.riskLevelText || '—'" /></template>
         </el-table-column>
-        <el-table-column label="最近随访" width="110">
+        <el-table-column label="最近随访" min-width="112" align="center">
           <template #default="{ row }">{{ dash(row.lastVisitDate) }}</template>
         </el-table-column>
-        <el-table-column label="下次随访" width="110">
+        <el-table-column label="下次随访" min-width="112" align="center">
           <template #default="{ row }">{{ dash(row.nextVisitDate) }}</template>
         </el-table-column>
-        <el-table-column label="30 天发作" width="100">
+        <el-table-column label="30 天发作" width="100" align="center">
           <template #default>—</template>
         </el-table-column>
-        <el-table-column label="用药依从率" width="110">
+        <el-table-column label="用药依从率" width="110" align="center">
           <template #default>—</template>
         </el-table-column>
-        <el-table-column label="状态" width="96">
+        <el-table-column label="状态" width="96" align="center">
           <template #default="{ row }"><Chip :text="row.statusText || '—'" /></template>
         </el-table-column>
-        <el-table-column label="管床医生" width="110">
+        <el-table-column label="管床医生" width="104" align="center">
           <template #default="{ row }">{{ dash(row.doctorName) }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="110" align="right">
+        <el-table-column label="操作" min-width="100" align="right">
           <template #default="{ row }">
             <el-button link type="primary" @click.stop="goDetail(row.id)">查看档案</el-button>
           </template>
@@ -240,5 +243,12 @@ onMounted(() => {
 }
 .clickable-table :deep(.el-table__row) {
   cursor: pointer;
+}
+.clickable-table :deep(.el-table__cell) {
+  padding: 10px 0;
+}
+.clickable-table :deep(.el-table__cell .cell) {
+  padding: 0 10px;
+  line-height: 1.6;
 }
 </style>
