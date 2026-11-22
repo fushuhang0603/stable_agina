@@ -6,6 +6,7 @@ import com.stable_angina.business.domain.dto.PatientQueryDTO;
 import com.stable_angina.business.domain.entity.Patient;
 import com.stable_angina.business.domain.vo.PatientBaselineVO;
 import com.stable_angina.business.domain.vo.PatientChangeLogVO;
+import com.stable_angina.business.domain.vo.PatientProfileVO;
 import com.stable_angina.business.domain.vo.PatientStatsVO;
 import com.stable_angina.business.domain.vo.PatientVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,4 +32,9 @@ public interface PatientMapper extends BaseMapper<Patient> {
     List<PatientChangeLogVO> selectChangeLogs(@Param("patientId") Long patientId);
 
     PatientStatsVO selectStats(@Param("doctorId") Long doctorId);
+
+    /**
+     * 患者端本人档案：含账号身份证与管床医生所属医院、科室
+     */
+    PatientProfileVO selectPatientProfile(@Param("patientId") Long patientId);
 }

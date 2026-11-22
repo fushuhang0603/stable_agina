@@ -1,67 +1,111 @@
 <template>
   <div class="followup-board">
-    <el-card shadow="never" class="board-bar">
-      <div class="board-bar-in">
-        <div class="board-stat">
-          <span class="k">待随访</span>
-          <b>{{ groups.pending.length }}</b>
-        </div>
-        <div class="board-stat">
-          <span class="k">随访中</span>
-          <b class="blue">{{ groups.processing.length }}</b>
-        </div>
-        <div class="board-stat">
-          <span class="k">已逾期</span>
-          <b class="red">{{ groups.overdue.length }}</b>
-        </div>
-        <div class="board-stat">
-          <span class="k">已完成</span>
-          <b class="green">{{ groups.done.length }}</b>
-        </div>
-        <div class="board-stat">
-          <span class="k">已驳回</span>
-          <b class="amber">{{ groups.rejected.length }}</b>
-        </div>
-        <div class="board-filter">
-          <el-select v-model="doctor" placeholder="随访医生" clearable style="width: 132px">
-            <el-option v-for="o in doctorOptions" :key="o.value" :label="o.label" :value="o.value" />
-          </el-select>
-          <el-button @click="toast('演示环境：已按当前条件刷新工单')">刷新</el-button>
-        </div>
+    <div class="grid g5">
+      <StatCard title="待随访" :value="stats.pending" icon="clipboard" tone="amber" desc="计划日期未到，等待随访" />
+      <StatCard title="随访中" :value="stats.processing" icon="clock" tone="blue" desc="已开始随访跟踪" />
+      <StatCard title="已逾期" :value="stats.overdue" icon="bell" tone="red" desc="超过计划日期未完成" />
+      <StatCard title="已完成" :value="stats.done" icon="check" tone="green" desc="已完成本次随访" />
+      <StatCard title="已驳回" :value="stats.rejected" icon="alert" tone="red" desc="记录不完整被退回" />
+    </div>
+
+    <el-card shadow="never" class="filter-card">
+      <div class="filter-bar">
+        <el-input
+          v-model.trim="filters.orderNo"
+          placeholder="工单号"
+          clearable
+          style="width: 170px"
+          @keyup.enter="search"
+        >
+          <template #prefix><el-icon><Search /></el-icon></template>
+        </el-input>
+        <el-input
+          v-model.trim="filters.patientName"
+          placeholder="患者姓名"
+          clearable
+          style="width: 140px"
+          @keyup.enter="search"
+        />
+        <el-select v-model="filters.status" placeholder="工单状态" clearable style="width: 130px">
+          <el-option v-for="s in statusOptions" :key="s" :label="s" :value="s" />
+        </el-select>
+        <el-select v-model="filters.type" placeholder="随访类型" clearable style="width: 140px">
+          <el-option v-for="t in typeOptions" :key="t" :label="t" :value="t" />
+        </el-select>
+        <el-select v-model="filters.doctor" placeholder="随访医生" clearable style="width: 130px">
+          <el-option v-for="d in doctorOptions" :key="d" :label="d" :value="d" />
+        </el-select>
+        <el-button type="primary" @click="search">查询</el-button>
+        <el-button @click="reset">重置</el-button>
       </div>
     </el-card>
 
-    <div class="board">
-      <section v-for="col in columns" :key="col.key" class="board-col">
-        <header class="board-col-h">
-          <span class="dot" :style="{ background: col.color }"></span>
-          <b>{{ col.title }}</b>
-          <span class="cnt">{{ col.rows.length }}</span>
-        </header>
-        <div class="board-col-b">
-          <article v-for="row in col.rows" :key="row.id" class="fu-card" :class="{ overdue: row.status === '已逾期' }">
-            <div class="fu-top">
-              <span class="fu-name" @click="goPatient(row.patientId)">{{ row.patientName }}</span>
-              <Chip :text="row.risk" />
-              <span class="fu-due" :class="{ red: row.status === '已逾期' }">{{ row.dueDate }}</span>
+    <Card title="随访工单">
+      <template #extra>
+        <span class="card-hint">共 {{ total }} 单，按计划随访日期排序</span>
+      </template>
+
+      <el-table
+        :data="pagedRows"
+        size="small"
+        class="clickable-table"
+        @row-click="(row) => goPatient(row.patientId)"
+      >
+        <el-table-column label="工单号" width="150">
+          <template #default="{ row }"><span class="mono">{{ row.id }}</span></template>
+        </el-table-column>
+        <el-table-column label="患者" width="160">
+          <template #default="{ row }">
+            <div class="patient-cell">
+              <span class="avatar">{{ (row.patientName || '?').charAt(0) }}</span>
+              <div>
+                <b>{{ row.patientName || '—' }}</b>
+                <div class="mono t-muted">{{ row.patientId || '—' }}</div>
+              </div>
             </div>
-            <div class="fu-meta">
-              <span>{{ row.type }}</span>
-              <span>{{ row.doctor }}</span>
-            </div>
-            <div class="fu-no mono">{{ row.id }}</div>
-            <div v-if="row.conclusion" class="fu-conclusion">{{ row.conclusion }}</div>
-            <div class="fu-ops">
-              <el-button v-if="row.status !== '已完成'" size="small" type="primary" @click="openRecord(row)">记录随访</el-button>
-              <el-button v-if="row.status === '已完成'" size="small" @click="archive(row)">归档</el-button>
-              <el-button v-if="row.status === '随访中'" size="small" type="danger" @click="reject(row)">驳回</el-button>
-              <el-button size="small" @click="goPatient(row.patientId)">档案</el-button>
-            </div>
-          </article>
-          <el-empty v-if="!col.rows.length" description="暂无工单" :image-size="56" />
-        </div>
-      </section>
-    </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="危险分层" width="92" align="center">
+          <template #default="{ row }"><Chip :text="row.risk || '—'" /></template>
+        </el-table-column>
+        <el-table-column label="随访类型" min-width="102" align="center">
+          <template #default="{ row }">{{ dash(row.type) }}</template>
+        </el-table-column>
+        <el-table-column label="计划随访" min-width="112" align="center">
+          <template #default="{ row }">
+            <span :class="{ 't-red': row.status === '已逾期' }">{{ dash(row.dueDate) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="随访医生" width="100" align="center">
+          <template #default="{ row }">{{ dash(row.doctor) }}</template>
+        </el-table-column>
+        <el-table-column label="状态" width="96" align="center">
+          <template #default="{ row }"><Chip :text="row.status" /></template>
+        </el-table-column>
+        <el-table-column label="完成时间" min-width="150" align="center">
+          <template #default="{ row }">{{ dash(row.doneAt) }}</template>
+        </el-table-column>
+        <el-table-column label="随访结论" min-width="200" show-overflow-tooltip>
+          <template #default="{ row }">{{ dash(row.conclusion) }}</template>
+        </el-table-column>
+        <el-table-column label="操作" width="220" align="right">
+          <template #default="{ row }">
+            <el-button
+              v-if="row.status !== '已完成'"
+              link
+              type="primary"
+              @click.stop="openRecord(row)"
+            >记录随访</el-button>
+            <el-button v-if="row.status === '已完成'" link @click.stop="archive(row)">归档</el-button>
+            <el-button v-if="row.status === '随访中'" link type="danger" @click.stop="reject(row)">驳回</el-button>
+            <el-button link @click.stop="goPatient(row.patientId)">档案</el-button>
+          </template>
+        </el-table-column>
+        <template #empty>未找到符合条件的工单</template>
+      </el-table>
+
+      <ListPager v-model:page="page" :total="total" :size="pageSize" />
+    </Card>
 
     <el-dialog v-model="showModal" title="记录随访结论" width="560px">
       <el-form label-width="92px">
@@ -114,34 +158,76 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import Card from '../components/Card.vue'
 import Chip from '../components/Chip.vue'
+import ListPager from '../components/ListPager.vue'
+import StatCard from '../components/StatCard.vue'
 import { FOLLOWUPS, nowText } from '../mock'
 import { toast } from '../utils/toast'
 
 const router = useRouter()
-const doctor = ref('')
-const doctorOptions = [
-  { value: '李医生', label: '李医生' },
-  { value: '王医生', label: '王医生' }
-]
 
-const rows = computed(() => FOLLOWUPS.filter((row) => !doctor.value || row.doctor === doctor.value))
-const groups = computed(() => ({
-  pending: rows.value.filter((row) => row.status === '待随访'),
-  processing: rows.value.filter((row) => row.status === '随访中'),
-  overdue: rows.value.filter((row) => row.status === '已逾期'),
-  done: rows.value.filter((row) => row.status === '已完成'),
-  rejected: rows.value.filter((row) => row.status === '已驳回')
+const pageSize = 8
+const page = ref(1)
+
+const filters = reactive({
+  orderNo: '',
+  patientName: '',
+  status: undefined,
+  type: undefined,
+  doctor: undefined
+})
+
+const statusOptions = ['待随访', '随访中', '已逾期', '已完成', '已驳回', '已归档']
+const typeOptions = [...new Set(FOLLOWUPS.map((row) => row.type))]
+const doctorOptions = [...new Set(FOLLOWUPS.map((row) => row.doctor))]
+
+const stats = computed(() => ({
+  pending: FOLLOWUPS.filter((row) => row.status === '待随访').length,
+  processing: FOLLOWUPS.filter((row) => row.status === '随访中').length,
+  overdue: FOLLOWUPS.filter((row) => row.status === '已逾期').length,
+  done: FOLLOWUPS.filter((row) => row.status === '已完成').length,
+  rejected: FOLLOWUPS.filter((row) => row.status === '已驳回').length
 }))
 
-const columns = computed(() => [
-  { key: 'pending', title: '待随访', color: '#FF7D00', rows: groups.value.pending },
-  { key: 'processing', title: '随访中', color: '#165DFF', rows: [...groups.value.processing, ...groups.value.overdue] },
-  { key: 'done', title: '已完成', color: '#00B42A', rows: groups.value.done },
-  { key: 'rejected', title: '已驳回', color: '#F53F3F', rows: groups.value.rejected }
-])
+const filteredRows = computed(() => {
+  const list = FOLLOWUPS.filter((row) => {
+    if (filters.orderNo && !row.id.toLowerCase().includes(filters.orderNo.toLowerCase())) return false
+    if (filters.patientName && !row.patientName.includes(filters.patientName)) return false
+    if (filters.status && row.status !== filters.status) return false
+    if (filters.type && row.type !== filters.type) return false
+    if (filters.doctor && row.doctor !== filters.doctor) return false
+    return true
+  })
+  return [...list].sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+})
+
+const total = computed(() => filteredRows.value.length)
+const pagedRows = computed(() => filteredRows.value.slice((page.value - 1) * pageSize, page.value * pageSize))
+
+watch(total, (len) => {
+  const maxPage = Math.max(1, Math.ceil(len / pageSize))
+  if (page.value > maxPage) page.value = maxPage
+})
+
+function dash(value) {
+  return value === null || value === undefined || value === '' ? '—' : value
+}
+
+function search() {
+  page.value = 1
+}
+
+function reset() {
+  filters.orderNo = ''
+  filters.patientName = ''
+  filters.status = undefined
+  filters.type = undefined
+  filters.doctor = undefined
+  page.value = 1
+}
 
 const showModal = ref(false)
 const current = ref({})
@@ -158,7 +244,7 @@ function openRecord(row) {
 
 function submit() {
   if (!form.conclusion.trim()) {
-    toast('请填写随访结论')
+    toast.error('请填写随访结论')
     return
   }
   const row = current.value
@@ -193,156 +279,47 @@ function goPatient(id) {
 </script>
 
 <style scoped>
-.board-bar {
+.g5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.filter-card {
   margin-bottom: 12px;
 }
-.board-bar-in {
+.patient-cell {
   display: flex;
   align-items: center;
-  gap: 26px;
-  flex-wrap: wrap;
+  gap: 9px;
 }
-.board-stat {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-.board-stat .k {
-  color: var(--ink-3);
-  font-size: 12px;
-}
-.board-stat b {
-  font-size: 18px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-.board-stat b.blue {
-  color: var(--brand);
-}
-.board-stat b.red {
-  color: var(--red);
-}
-.board-stat b.green {
-  color: var(--green);
-}
-.board-stat b.amber {
-  color: var(--amber);
-}
-.board-filter {
-  margin-left: auto;
-  display: flex;
-  gap: 8px;
-}
-.board {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  align-items: start;
-}
-.board-col {
-  background: var(--surface);
-  border: 1px solid #eef0f4;
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  min-height: 320px;
-}
-.board-col-h {
-  display: flex;
+.patient-cell .avatar {
+  display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line-2);
-  font-size: 13px;
-}
-.board-col-h .dot {
-  width: 6px;
-  height: 6px;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  flex: none;
-}
-.board-col-h .cnt {
-  margin-left: auto;
-  min-width: 20px;
-  height: 18px;
-  padding: 0 6px;
-  border-radius: 9px;
-  background: var(--surface-2);
-  color: var(--ink-3);
-  font-size: 11px;
-  display: grid;
-  place-items: center;
-}
-.board-col-b {
-  flex: 1;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.fu-card {
-  border: 1px solid #eef0f4;
-  border-radius: var(--radius-sub);
-  padding: 12px 14px;
-  background: #fff;
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 0.15s, border-color 0.15s;
-}
-.fu-card:hover {
-  border-color: #bedaff;
-  box-shadow: var(--shadow-card-hover);
-}
-.fu-card.overdue {
-  background: #fffbfa;
-}
-.fu-top {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.fu-name {
-  color: var(--ink);
+  background: #eef2ff;
+  color: #4f6ef7;
   font-weight: 600;
+  flex: 0 0 auto;
+}
+.patient-cell b {
+  font-weight: 500;
+}
+.patient-cell .mono {
+  font-size: 11.5px;
+}
+.clickable-table :deep(.el-table__row) {
   cursor: pointer;
 }
-.fu-name:hover {
-  color: var(--brand);
+.clickable-table :deep(.el-table__cell) {
+  padding: 10px 0;
 }
-.fu-due {
-  margin-left: auto;
-  color: var(--ink-3);
-  font-size: 11.5px;
-}
-.fu-due.red {
-  color: var(--red);
-}
-.fu-meta {
-  display: flex;
-  gap: 10px;
-  margin-top: 4px;
-  color: var(--ink-3);
-  font-size: 11.5px;
-}
-.fu-no {
-  margin-top: 2px;
-  font-size: 11px;
-  color: var(--ink-3);
-}
-.fu-conclusion {
-  margin-top: 6px;
-  padding: 6px 8px;
-  border-radius: 8px;
-  background: var(--surface-2);
-  color: var(--ink-2);
-  font-size: 12px;
+.clickable-table :deep(.el-table__cell .cell) {
+  padding: 0 10px;
   line-height: 1.6;
 }
-.fu-ops {
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
-  flex-wrap: wrap;
+.t-red {
+  color: var(--red);
 }
 .form-2 {
   display: grid;

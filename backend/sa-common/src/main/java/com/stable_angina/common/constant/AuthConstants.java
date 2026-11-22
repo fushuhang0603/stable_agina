@@ -10,6 +10,10 @@ public final class AuthConstants {
 
     /** 超级管理员角色标识 */
     public static final String ROLE_SUPER_ADMIN = "SUPER_ADMIN";
+    /** 医生角色标识 */
+    public static final String ROLE_DOCTOR = "DOCTOR";
+    /** 患者角色标识 */
+    public static final String ROLE_PATIENT = "PATIENT";
     /** 全部权限通配符 */
     public static final String PERMISSION_ALL = "*";
     /** 令牌请求头 */

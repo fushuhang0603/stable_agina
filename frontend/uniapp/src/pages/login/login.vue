@@ -12,33 +12,26 @@
 
     <view class="h5-card lg-card">
       <view class="form-row">
-        <text class="lbl">手机号<text class="req">*</text></text>
+        <text class="lbl">账号<text class="req">*</text></text>
         <input
-          v-model="phone"
+          v-model="username"
           class="fa-input"
-          type="number"
-          maxlength="11"
-          placeholder="请输入建档手机号"
+          type="text"
+          placeholder="请输入用户名"
           placeholder-class="ph"
         />
       </view>
 
       <view class="form-row">
-        <text class="lbl">验证码<text class="req">*</text></text>
-        <view class="fa-row">
-          <input
-            v-model="code"
-            class="fa-input fa-grow"
-            type="number"
-            maxlength="6"
-            placeholder="请输入 6 位验证码"
-            placeholder-class="ph"
-          />
-          <view class="h5-btn blue sm code-btn" :class="{ disabled: counting > 0 }" @click="sendCode">
-            {{ counting > 0 ? counting + 's' : '获取验证码' }}
-          </view>
-        </view>
-        <text v-if="mockCode" class="form-hint">演示验证码：{{ mockCode }}</text>
+        <text class="lbl">密码<text class="req">*</text></text>
+        <input
+          v-model="password"
+          class="fa-input"
+          type="text"
+          password
+          placeholder="请输入登录密码"
+          placeholder-class="ph"
+        />
       </view>
 
       <view class="check-row mt-9" @click="agreed = !agreed">
@@ -52,8 +45,9 @@
         登 录
       </view>
 
-      <view class="lg-demo" @click="fillDemo">
-        <text class="t-12 ink-3">演示账号 13800006621 / 123456，点击自动填充</text>
+      <view class="lg-register" @click="goRegister">
+        <text class="t-12 ink-3">还没有账号？</text>
+        <text class="t-12 lg-link">立即注册</text>
       </view>
     </view>
 
@@ -69,21 +63,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user'
 import { toast } from '@/utils/format'
 
 const user = useUserStore()
 
-const phone = ref('')
-const code = ref('')
+const username = ref('')
+const password = ref('')
 const agreed = ref(true)
-const counting = ref(0)
-const mockCode = ref('')
-let timer = null
+const submitting = ref(false)
 
-const canSubmit = computed(() => /^1\d{10}$/.test(phone.value) && code.value.length === 6 && agreed.value)
+const canSubmit = computed(() => username.value.trim().length > 0 && password.value.length > 0 && agreed.value)
 
 onLoad(() => {
   if (user.isLogin) {
@@ -91,45 +83,33 @@ onLoad(() => {
   }
 })
 
-onUnmounted(() => {
-  if (timer) clearInterval(timer)
-})
-
-function sendCode() {
-  if (counting.value > 0) return
-  if (!/^1\d{10}$/.test(phone.value)) {
-    toast('请先输入正确的手机号')
-    return
-  }
-  mockCode.value = '123456'
-  counting.value = 60
-  toast('验证码已发送（演示码 123456）')
-  timer = setInterval(() => {
-    counting.value -= 1
-    if (counting.value <= 0) {
-      clearInterval(timer)
-      timer = null
-    }
-  }, 1000)
+function goRegister() {
+  uni.navigateTo({ url: '/pages/register/register' })
 }
 
-function fillDemo() {
-  phone.value = '13800006621'
-  code.value = '123456'
-  mockCode.value = '123456'
-}
-
-function submit() {
+async function submit() {
+  if (submitting.value) return
   if (!agreed.value) {
     toast('请先阅读并同意隐私政策')
     return
   }
+  if (!username.value.trim()) {
+    toast('请输入用户名')
+    return
+  }
+  if (!password.value) {
+    toast('请输入登录密码')
+    return
+  }
+  submitting.value = true
   try {
-    user.login({ phone: phone.value, code: code.value })
+    await user.login({ username: username.value.trim(), password: password.value })
     toast('登录成功')
     setTimeout(() => uni.reLaunch({ url: '/pages/index/index' }), 400)
   } catch (e) {
-    toast(e.message || '登录失败')
+    // 错误提示已在请求层统一处理
+  } finally {
+    submitting.value = false
   }
 }
 </script>
@@ -171,11 +151,6 @@ function submit() {
 .lg-card {
   padding: 16px 14px;
 }
-.code-btn {
-  width: 92px;
-  flex: none;
-  height: 34px;
-}
 .check-ico {
   color: #fff;
 }
@@ -187,9 +162,14 @@ function submit() {
   margin-top: 14px;
   letter-spacing: 2px;
 }
-.lg-demo {
+.lg-register {
   margin-top: 12px;
   text-align: center;
+}
+.lg-link {
+  color: var(--brand);
+  font-weight: 600;
+  margin-left: 2px;
 }
 .note-ico {
   color: var(--brand);

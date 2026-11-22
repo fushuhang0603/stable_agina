@@ -32,7 +32,14 @@ public class LoginUser implements UserDetails, Serializable {
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return permissions.stream().map(SimpleGrantedAuthority::new).toList();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (roles != null) {
+            roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+        }
+        if (permissions != null) {
+            permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission)));
+        }
+        return authorities;
     }
 
     @JsonIgnore

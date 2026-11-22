@@ -3,6 +3,7 @@ package com.stable_angina.system.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stable_angina.common.api.ErrorCodes;
 import com.stable_angina.common.api.Result;
+import com.stable_angina.common.constant.AuthConstants;
 import com.stable_angina.system.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,8 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST = {
             "/api/auth/login",
             "/api/auth/refresh",
+            "/api/patient/auth/register",
+            "/api/patient/auth/login",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
@@ -60,6 +63,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(WHITE_LIST).permitAll()
+                        .requestMatchers("/api/patient/**").hasRole(AuthConstants.ROLE_PATIENT)
+                        .requestMatchers("/api/system/**", "/api/business/**")
+                        .hasAnyRole(AuthConstants.ROLE_SUPER_ADMIN, AuthConstants.ROLE_DOCTOR)
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint((request, response, e) ->

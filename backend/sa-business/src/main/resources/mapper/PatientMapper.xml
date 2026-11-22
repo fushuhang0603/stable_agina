@@ -110,4 +110,30 @@
             AND p.doctor_id = #{doctorId}
         </if>
     </select>
+    <select id="selectPatientProfile" resultType="com.stable_angina.business.domain.vo.PatientProfileVO">
+        SELECT p.id,
+               p.patient_no,
+               p.name,
+               p.gender,
+               TIMESTAMPDIFF(YEAR, p.birth_date, CURDATE()) AS age,
+               p.birth_date,
+               p.phone,
+               u.id_card,
+               p.diagnose_date,
+               p.allergy,
+               p.comorbidity,
+               p.risk_level,
+               p.status,
+               p.doctor_id,
+               d.real_name AS doctor_name,
+               d.hospital,
+               d.department,
+               p.last_visit_date,
+               p.next_visit_date
+        FROM patient p
+                 LEFT JOIN sys_user u ON u.id = p.user_id AND u.deleted = 0
+                 LEFT JOIN sys_user d ON d.id = p.doctor_id AND d.deleted = 0
+        WHERE p.deleted = 0
+          AND p.id = #{patientId}
+    </select>
 </mapper>
