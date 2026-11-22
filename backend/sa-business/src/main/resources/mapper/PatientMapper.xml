@@ -34,7 +34,7 @@
         <if test="query.phone != null and query.phone != ''">
             AND p.phone LIKE CONCAT('%', #{query.phone}, '%')
         </if>
-        <if test="query.riskLevel != null and query.riskLevel != ''">
+        <if test="query.riskLevel != null">
             AND p.risk_level = #{query.riskLevel}
         </if>
         <if test="query.status != null and query.status != ''">
@@ -43,7 +43,7 @@
         <if test="query.doctorId != null">
             AND p.doctor_id = #{query.doctorId}
         </if>
-        ORDER BY FIELD(p.risk_level, 'HIGH', 'MID', 'LOW'), p.next_visit_date ASC, p.id DESC
+        ORDER BY p.risk_level DESC, p.next_visit_date ASC, p.id DESC
     </select>
 
     <select id="selectPatientDetail" resultType="com.stable_angina.business.domain.vo.PatientVO">
@@ -101,7 +101,7 @@
 
     <select id="selectStats" resultType="com.stable_angina.business.domain.vo.PatientStatsVO">
         SELECT COUNT(*) AS total,
-               COALESCE(SUM(CASE WHEN p.risk_level = 'HIGH' THEN 1 ELSE 0 END), 0) AS high_risk,
+               COALESCE(SUM(CASE WHEN p.risk_level = 3 THEN 1 ELSE 0 END), 0) AS high_risk,
                COALESCE(SUM(CASE WHEN p.status = 'FOLLOWING' THEN 1 ELSE 0 END), 0) AS following,
                COALESCE(SUM(CASE WHEN p.status = 'OVERDUE' THEN 1 ELSE 0 END), 0) AS overdue
         FROM patient p

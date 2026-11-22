@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stable_angina.business.mapper.PatientDoctorApplyMapper">
+
+    <sql id="applyColumns">
+        a.id,
+        a.patient_id,
+        p.patient_no,
+        p.name AS patient_name,
+        p.phone AS patient_phone,
+        p.risk_level,
+        a.user_id,
+        a.doctor_id,
+        d.real_name AS doctor_name,
+        d.title AS doctor_title,
+        d.hospital AS doctor_hospital,
+        d.department AS doctor_department,
+        a.apply_type,
+        a.status,
+        a.apply_reason,
+        a.reject_reason,
+        a.handle_by,
+        h.real_name AS handle_name,
+        a.handle_time,
+        a.create_time
+    </sql>
+
+    <select id="selectApplyPage" resultType="com.stable_angina.business.domain.vo.PatientDoctorApplyVO">
+        SELECT
+        <include refid="applyColumns"/>
+        FROM patient_doctor_apply a
+        INNER JOIN patient p ON p.id = a.patient_id AND p.deleted = 0
+        LEFT JOIN sys_user d ON d.id = a.doctor_id AND d.deleted = 0
+        LEFT JOIN sys_user h ON h.id = a.handle_by AND h.deleted = 0
+        WHERE a.deleted = 0
+        <if test="query.status != null">
+            AND a.status = #{query.status}
+        </if>
+        <if test="query.applyType != null">
+            AND a.apply_type = #{query.applyType}
+        </if>
+        <if test="query.patientName != null and query.patientName != ''">
+            AND p.name LIKE CONCAT('%', #{query.patientName}, '%')
+        </if>
+        <if test="query.doctorName != null and query.doctorName != ''">
+            AND d.real_name LIKE CONCAT('%', #{query.doctorName}, '%')
+        </if>
+        <if test="doctorId != null">
+            AND a.doctor_id = #{doctorId}
+        </if>
+        ORDER BY a.status ASC, a.create_time DESC, a.id DESC
+    </select>
+
+    <select id="selectApplyById" resultType="com.stable_angina.business.domain.vo.PatientDoctorApplyVO">
+        SELECT
+        <include refid="applyColumns"/>
+        FROM patient_doctor_apply a
+        INNER JOIN patient p ON p.id = a.patient_id AND p.deleted = 0
+        LEFT JOIN sys_user d ON d.id = a.doctor_id AND d.deleted = 0
+        LEFT JOIN sys_user h ON h.id = a.handle_by AND h.deleted = 0
+        WHERE a.deleted = 0
+          AND a.id = #{id}
+    </select>
+</mapper>

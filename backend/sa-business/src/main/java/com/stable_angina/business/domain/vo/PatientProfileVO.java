@@ -45,8 +45,8 @@ public class PatientProfileVO implements Serializable {
     @Schema(description = "身份证号，中间位脱敏")
     private String idCard;
 
-    @Schema(description = "危险分层：HIGH / MID / LOW")
-    private String riskLevel;
+    @Schema(description = "危险分层：1 低危 2 中危 3 高危")
+    private Integer riskLevel;
 
     @Schema(description = "危险分层文本")
     private String riskLevelText;

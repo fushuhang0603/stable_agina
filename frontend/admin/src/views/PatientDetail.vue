@@ -455,9 +455,9 @@ const genderOptions = [
   { value: 0, label: '未知' }
 ]
 const riskOptions = [
-  { value: 'HIGH', label: '高危' },
-  { value: 'MID', label: '中危' },
-  { value: 'LOW', label: '低危' }
+  { value: 3, label: '高危' },
+  { value: 2, label: '中危' },
+  { value: 1, label: '低危' }
 ]
 const statusOptions = [
   { value: 'FOLLOWING', label: '随访中' },
@@ -470,7 +470,7 @@ const form = reactive({
   phone: '',
   allergy: '',
   comorbidity: '',
-  riskLevel: '',
+  riskLevel: null,
   status: '',
   nextVisitDate: '',
   remark: ''
@@ -484,7 +484,7 @@ function openEdit() {
     phone: patient.value.phone || '',
     allergy: patient.value.allergy || '',
     comorbidity: patient.value.comorbidity || '',
-    riskLevel: patient.value.riskLevel || '',
+    riskLevel: patient.value.riskLevel ?? null,
     status: patient.value.status || '',
     nextVisitDate: patient.value.nextVisitDate || '',
     remark: patient.value.remark || ''
@@ -506,7 +506,7 @@ async function submit() {
       phone: form.phone || null,
       allergy: form.allergy || null,
       comorbidity: form.comorbidity || null,
-      riskLevel: form.riskLevel || null,
+      riskLevel: form.riskLevel ?? null,
       status: form.status || null,
       nextVisitDate: form.nextVisitDate || null,
       remark: form.remark || null

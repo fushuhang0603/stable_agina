@@ -55,15 +55,9 @@
       }
     },
     {
-      "path": "pages/message/message",
+      "path": "pages/my-doctor/my-doctor",
       "style": {
-        "navigationBarTitleText": "消息"
-      }
-    },
-    {
-      "path": "pages/profile/profile",
-      "style": {
-        "navigationBarTitleText": "我的"
+        "navigationBarTitleText": "我的医生"
       }
     }
   ],

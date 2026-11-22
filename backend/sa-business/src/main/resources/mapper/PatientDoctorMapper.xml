@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stable_angina.business.mapper.PatientDoctorMapper">
+
+    <sql id="doctorColumns">
+        u.id,
+        u.real_name AS name,
+        u.title,
+        u.hospital,
+        u.department,
+        pr.specialty,
+        pr.introduction,
+        pr.max_patients,
+        (SELECT COUNT(*) FROM patient pt WHERE pt.doctor_id = u.id AND pt.deleted = 0) AS patient_count
+    </sql>
+
+    <select id="selectDoctorOptions" resultType="com.stable_angina.business.domain.vo.PatientDoctorOptionVO">
+        SELECT
+        <include refid="doctorColumns"/>
+        FROM sys_user u
+        LEFT JOIN doctor_profile pr ON pr.user_id = u.id AND pr.deleted = 0
+        WHERE u.deleted = 0
+          AND u.status = 1
+          AND EXISTS (SELECT 1
+                      FROM sys_user_role x
+                               INNER JOIN sys_role r ON r.id = x.role_id AND r.deleted = 0
+                      WHERE x.user_id = u.id
+                        AND r.role_key = 'DOCTOR')
+        ORDER BY u.id
+    </select>
+
+    <select id="selectDoctorById" resultType="com.stable_angina.business.domain.vo.PatientDoctorOptionVO">
+        SELECT
+        <include refid="doctorColumns"/>
+        FROM sys_user u
+        LEFT JOIN doctor_profile pr ON pr.user_id = u.id AND pr.deleted = 0
+        WHERE u.deleted = 0
+          AND u.status = 1
+          AND u.id = #{doctorId}
+          AND EXISTS (SELECT 1
+                      FROM sys_user_role x
+                               INNER JOIN sys_role r ON r.id = x.role_id AND r.deleted = 0
+                      WHERE x.user_id = u.id
+                        AND r.role_key = 'DOCTOR')
+    </select>
+</mapper>

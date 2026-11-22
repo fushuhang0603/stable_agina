@@ -32,8 +32,8 @@ public class PatientUpdateDTO {
     @Schema(description = "合并症")
     private String comorbidity;
 
-    @Schema(description = "危险分层：HIGH / MID / LOW")
-    private String riskLevel;
+    @Schema(description = "危险分层：1 低危 2 中危 3 高危")
+    private Integer riskLevel;
 
     @Schema(description = "随访状态：FOLLOWING / OVERDUE")
     private String status;

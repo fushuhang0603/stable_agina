@@ -2,6 +2,7 @@ package com.stable_angina.business.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.stable_angina.business.constant.PatientConstants;
 import com.stable_angina.business.domain.dto.PatientRegisterDTO;
 import com.stable_angina.business.domain.entity.Patient;
 import com.stable_angina.business.domain.vo.PatientLoginVO;
@@ -133,8 +134,8 @@ public class PatientAuthServiceImpl implements PatientAuthService {
         patient.setGender(user.getGender());
         patient.setBirthDate(readBirthDate(idCard));
         patient.setPhone(phone);
-        patient.setRiskLevel("LOW");
-        patient.setStatus("FOLLOWING");
+        patient.setRiskLevel(PatientConstants.RISK_LOW);
+        patient.setStatus(PatientConstants.PATIENT_STATUS_FOLLOWING);
         patient.setCreateTime(now);
         patient.setUpdateTime(now);
         patientMapper.insert(patient);
@@ -218,9 +219,14 @@ public class PatientAuthServiceImpl implements PatientAuthService {
         if (profile == null) {
             throw new BusinessException(ErrorCodes.BAD_REQUEST, "患者档案不存在");
         }
-        profile.setGenderText(genderText(profile.getGender()));
-        profile.setRiskLevelText(riskLevelText(profile.getRiskLevel()));
-        profile.setStatusText(statusText(profile.getStatus()));
+        Integer gender = profile.getGender();
+        profile.setGenderText(gender == null ? "未知" : switch (gender) {
+            case 1 -> "男";
+            case 2 -> "女";
+            default -> "未知";
+        });
+        profile.setRiskLevelText(PatientConstants.riskLevelText(profile.getRiskLevel()));
+        profile.setStatusText(PatientConstants.statusText(profile.getStatus()));
         profile.setIdCard(maskIdCard(profile.getIdCard()));
         return profile;
     }
@@ -294,39 +300,5 @@ public class PatientAuthServiceImpl implements PatientAuthService {
             return idCard;
         }
         return idCard.substring(0, 4) + "**********" + idCard.substring(14);
-    }
-
-    private String genderText(Integer gender) {
-        if (gender == null) {
-            return "未知";
-        }
-        return switch (gender) {
-            case 1 -> "男";
-            case 2 -> "女";
-            default -> "未知";
-        };
-    }
-
-    private String riskLevelText(String riskLevel) {
-        if (riskLevel == null) {
-            return "";
-        }
-        return switch (riskLevel) {
-            case "HIGH" -> "高危";
-            case "MID" -> "中危";
-            case "LOW" -> "低危";
-            default -> riskLevel;
-        };
-    }
-
-    private String statusText(String status) {
-        if (status == null) {
-            return "";
-        }
-        return switch (status) {
-            case "FOLLOWING" -> "随访中";
-            case "OVERDUE" -> "已逾期";
-            default -> status;
-        };
     }
 }

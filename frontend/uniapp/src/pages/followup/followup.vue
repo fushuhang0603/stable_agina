@@ -1,10 +1,10 @@
 <template>
   <view :class="user.pageClass">
     <g-message />
-    <g-nav-bar title="随访" :back="false" />
+    <g-nav-bar title="随访" />
     <g-tabs v-model="tab" :tabs="tabs" />
 
-    <view class="fa-body has-tabbar">
+    <view class="fa-body">
       <!-- 待随访 -->
       <template v-if="tab === 'todo'">
         <view class="h5-card fu-overview">
@@ -173,8 +173,6 @@
         </view>
       </template>
     </view>
-
-    <g-tabbar current="followup" />
 
     <!-- 随访问卷弹层 -->
     <g-popup ref="quizPopup" title="随访问卷">

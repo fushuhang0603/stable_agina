@@ -50,8 +50,8 @@ public class Patient extends BaseEntity {
     @Schema(description = "合并症")
     private String comorbidity;
 
-    @Schema(description = "危险分层：HIGH 高危 / MID 中危 / LOW 低危")
-    private String riskLevel;
+    @Schema(description = "危险分层：1 低危 2 中危 3 高危")
+    private Integer riskLevel;
 
     @Schema(description = "随访状态：FOLLOWING 随访中 / OVERDUE 已逾期")
     private String status;

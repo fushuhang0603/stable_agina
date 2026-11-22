@@ -141,9 +141,9 @@ const filters = reactive({
 })
 
 const riskOptions = [
-  { value: 'HIGH', label: '高危' },
-  { value: 'MID', label: '中危' },
-  { value: 'LOW', label: '低危' }
+  { value: 3, label: '高危' },
+  { value: 2, label: '中危' },
+  { value: 1, label: '低危' }
 ]
 const statusOptions = [
   { value: 'FOLLOWING', label: '随访中' },

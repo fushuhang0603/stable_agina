@@ -3,6 +3,7 @@ export const PAGES = {
   dashboard: { title: '随访统计看板', perm: 'menu:dashboard' },
   'patient-list': { title: '患者管理', perm: 'menu:patient' },
   'patient-detail': { title: '患者全量档案', perm: 'menu:patient' },
+  'doctor-bind-apply': { title: '绑定申请审核', perm: 'menu:doctor-apply' },
   'followup-board': { title: '随访工单看板', perm: 'menu:followup' },
   'ai-summary': { title: 'AI 随访摘要', perm: 'menu:ai-summary' },
   'medication-order': { title: '医嘱管理', perm: 'menu:medication' },
@@ -26,7 +27,8 @@ export const AD_NAV = [
       { id: 'ai-summary', title: 'AI 随访摘要', ico: 'activity' },
       { id: 'system-config', title: '随访参数', ico: 'settings' },
       { id: 'patient-list', title: '患者管理', ico: 'users' },
-      { id: 'doctor-management', title: '医生管理', ico: 'users' }
+      { id: 'doctor-management', title: '医生管理', ico: 'users' },
+      { id: 'doctor-bind-apply', title: '绑定申请审核', ico: 'check' }
     ]
   },
   {
