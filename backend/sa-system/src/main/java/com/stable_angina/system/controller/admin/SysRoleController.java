@@ -1,6 +1,7 @@
 package com.stable_angina.system.controller.admin;
 
 import com.stable_angina.common.api.Result;
+import com.stable_angina.system.annotation.OperLog;
 import com.stable_angina.system.domain.dto.SysRoleGrantDTO;
 import com.stable_angina.system.domain.vo.SysRoleVO;
 import com.stable_angina.system.service.SysRoleService;
@@ -41,6 +42,7 @@ public class SysRoleController {
     }
 
     @Operation(summary = "保存角色权限分配")
+    @OperLog(module = "角色与权限", action = "授权")
     @PutMapping("/{id}/grant")
     public Result<Void> grant(@PathVariable Long id, @Valid @RequestBody SysRoleGrantDTO dto) {
         sysRoleService.grant(id, dto);

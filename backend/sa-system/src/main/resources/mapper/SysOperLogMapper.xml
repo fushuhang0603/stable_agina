@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stable_angina.system.mapper.SysOperLogMapper">
+
+    <select id="selectOperLogPage" resultType="com.stable_angina.system.domain.vo.SysOperLogVO">
+        SELECT id,
+               title,
+               business_type,
+               method,
+               request_method,
+               oper_name,
+               oper_url,
+               oper_ip,
+               oper_param,
+               json_result,
+               status,
+               error_msg,
+               cost_time,
+               oper_time
+        FROM sys_oper_log
+        <where>
+            <if test="query.operName != null and query.operName != ''">
+                AND oper_name LIKE CONCAT('%', #{query.operName}, '%')
+            </if>
+            <if test="query.operUrl != null and query.operUrl != ''">
+                AND oper_url LIKE CONCAT('%', #{query.operUrl}, '%')
+            </if>
+            <if test="query.title != null and query.title != ''">
+                AND title = #{query.title}
+            </if>
+            <if test="query.businessType != null and query.businessType != ''">
+                AND business_type = #{query.businessType}
+            </if>
+            <if test="query.status != null">
+                AND status = #{query.status}
+            </if>
+        </where>
+        ORDER BY oper_time DESC, id DESC
+    </select>
+
+    <select id="selectStats" resultType="com.stable_angina.system.domain.vo.SysOperLogStatsVO">
+        SELECT COUNT(*)                                                AS today_count,
+               COALESCE(SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END), 0) AS failed_count,
+               COUNT(DISTINCT oper_name)                               AS user_count
+        FROM sys_oper_log
+        WHERE oper_time &gt;= CURDATE()
+    </select>
+</mapper>

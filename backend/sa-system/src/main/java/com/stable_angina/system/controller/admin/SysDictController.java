@@ -1,6 +1,7 @@
 package com.stable_angina.system.controller.admin;
 
 import com.stable_angina.common.api.Result;
+import com.stable_angina.system.annotation.OperLog;
 import com.stable_angina.system.domain.dto.SysDictDataCreateDTO;
 import com.stable_angina.system.domain.dto.SysDictDataUpdateDTO;
 import com.stable_angina.system.domain.dto.SysDictTypeCreateDTO;
@@ -47,6 +48,7 @@ public class SysDictController {
     }
 
     @Operation(summary = "新增字典类型")
+    @OperLog(module = "基础字典", action = "新增类型")
     @PostMapping
     public Result<Void> createType(@Valid @RequestBody SysDictTypeCreateDTO dto) {
         sysDictService.createType(dto);
@@ -54,6 +56,7 @@ public class SysDictController {
     }
 
     @Operation(summary = "修改字典类型")
+    @OperLog(module = "基础字典", action = "修改类型")
     @PutMapping("/{id}")
     public Result<Void> updateType(@PathVariable Long id, @Valid @RequestBody SysDictTypeUpdateDTO dto) {
         sysDictService.updateType(id, dto);
@@ -61,6 +64,7 @@ public class SysDictController {
     }
 
     @Operation(summary = "删除字典类型")
+    @OperLog(module = "基础字典", action = "删除类型")
     @DeleteMapping("/{id}")
     public Result<Void> deleteType(@PathVariable Long id) {
         sysDictService.deleteType(id);
@@ -68,6 +72,7 @@ public class SysDictController {
     }
 
     @Operation(summary = "新增字典项")
+    @OperLog(module = "基础字典", action = "新增字典项")
     @PostMapping("/items")
     public Result<Void> createItem(@Valid @RequestBody SysDictDataCreateDTO dto) {
         sysDictService.createItem(dto);
@@ -75,6 +80,7 @@ public class SysDictController {
     }
 
     @Operation(summary = "修改字典项")
+    @OperLog(module = "基础字典", action = "修改字典项")
     @PutMapping("/items/{id}")
     public Result<Void> updateItem(@PathVariable Long id, @Valid @RequestBody SysDictDataUpdateDTO dto) {
         sysDictService.updateItem(id, dto);
@@ -82,6 +88,7 @@ public class SysDictController {
     }
 
     @Operation(summary = "删除字典项")
+    @OperLog(module = "基础字典", action = "删除字典项")
     @DeleteMapping("/items/{id}")
     public Result<Void> deleteItem(@PathVariable Long id) {
         sysDictService.deleteItem(id);

@@ -7,6 +7,7 @@ import com.stable_angina.business.domain.vo.DoctorProfileVO;
 import com.stable_angina.business.service.DoctorService;
 import com.stable_angina.common.api.PageResult;
 import com.stable_angina.common.api.Result;
+import com.stable_angina.system.annotation.OperLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -52,6 +53,7 @@ public class DoctorController {
     }
 
     @Operation(summary = "保存医生档案")
+    @OperLog(module = "医生管理", action = "修改档案")
     @PutMapping("/{userId}")
     public Result<Void> update(@PathVariable Long userId, @Valid @RequestBody DoctorProfileUpdateDTO dto) {
         doctorService.update(userId, dto);

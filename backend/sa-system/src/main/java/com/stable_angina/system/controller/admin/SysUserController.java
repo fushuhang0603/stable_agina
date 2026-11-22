@@ -2,6 +2,7 @@ package com.stable_angina.system.controller.admin;
 
 import com.stable_angina.common.api.PageResult;
 import com.stable_angina.common.api.Result;
+import com.stable_angina.system.annotation.OperLog;
 import com.stable_angina.system.domain.dto.SysUserCreateDTO;
 import com.stable_angina.system.domain.dto.SysUserPasswordDTO;
 import com.stable_angina.system.domain.dto.SysUserQueryDTO;
@@ -46,12 +47,14 @@ public class SysUserController {
     }
 
     @Operation(summary = "新增账号")
+    @OperLog(module = "账号管理", action = "新增")
     @PostMapping
     public Result<Long> create(@Valid @RequestBody SysUserCreateDTO dto) {
         return Result.success(sysUserService.create(dto));
     }
 
     @Operation(summary = "编辑账号")
+    @OperLog(module = "账号管理", action = "修改")
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @Valid @RequestBody SysUserUpdateDTO dto) {
         sysUserService.update(id, dto);
@@ -59,6 +62,7 @@ public class SysUserController {
     }
 
     @Operation(summary = "启用 / 停用账号")
+    @OperLog(module = "账号管理", action = "启用/停用")
     @PutMapping("/{id}/status")
     public Result<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody SysUserStatusDTO dto) {
         sysUserService.updateStatus(id, dto.getStatus());
@@ -66,6 +70,7 @@ public class SysUserController {
     }
 
     @Operation(summary = "重置密码")
+    @OperLog(module = "账号管理", action = "重置密码")
     @PutMapping("/{id}/password")
     public Result<Void> resetPassword(@PathVariable Long id, @Valid @RequestBody SysUserPasswordDTO dto) {
         sysUserService.resetPassword(id, dto.getPassword());
